@@ -7,7 +7,7 @@ class Institute(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     abbreviation = models.CharField(max_length=10)
-
+    logo = models.ImageField(upload_to='institute_logos',null=True,blank=True)
     def __str__(self):
         return f'{self.name} ({self.abbreviation})'
 
