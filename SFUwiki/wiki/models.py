@@ -42,7 +42,7 @@ class Teacher(models.Model):
     easiness_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     communication_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     institute = models.ForeignKey(Institute, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
-
+    review_count = models.PositiveIntegerField(default=0)
     def __str__(self):
         return self.name
 
@@ -59,8 +59,8 @@ class TeacherPhoto(models.Model):
 
 
 class Review(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='reviews')
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     knowledge_rating = models.PositiveSmallIntegerField(validators=rating_validator)
     teaching_skill_rating = models.PositiveSmallIntegerField(validators=rating_validator)
     easiness_rating = models.PositiveSmallIntegerField(validators=rating_validator)
@@ -71,3 +71,14 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{'Anonymous' if self.is_anonymous else self.student.username}: {self.comment}"
+
+
+class Discipline(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    teachers = models.ManyToManyField(Teacher, related_name='disciplines')
+    logo = models.ImageField(upload_to='discipline_photo')
+
+    def __str__(self):
+        return self.name
+

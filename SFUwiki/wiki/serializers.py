@@ -1,11 +1,24 @@
 from rest_framework import serializers
-from .models import Institute, InstitutePhoto, Department, Teacher, TeacherPhoto
+from .models import Institute, InstitutePhoto, Department, Teacher, TeacherPhoto, Discipline, Review
 
 
 class InstitutePhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstitutePhoto
         fields = ('photo',)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = '__all__'
+
+
+class DisciplineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Discipline
+        fields = '__all__'
 
 
 class TeacherPhotoSerializer(serializers.ModelSerializer):
@@ -30,8 +43,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 class TeacherSerializer(serializers.ModelSerializer):
     photos = TeacherPhotoSerializer(many=True)
-
+    disciplines = DisciplineSerializer(many=True)
+    reviews = ReviewSerializer(many=True)
     class Meta:
         model = Teacher
         fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
-                  'communication_rating', 'institute', 'bio', 'photos')
+                  'communication_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',)
