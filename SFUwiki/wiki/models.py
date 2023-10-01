@@ -14,7 +14,7 @@ class Institute(models.Model):
 
 
 class InstitutePhoto(models.Model):
-    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE, related_name='photos')
     photo = models.ImageField(upload_to='institute_photos')
 
     def __str__(self):
@@ -51,7 +51,7 @@ rating_validator = [MinValueValidator(1), MaxValueValidator(5)]
 
 
 class TeacherPhoto(models.Model):
-    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='photos')
     photo = models.ImageField(upload_to='teachers_photo')
 
     def __str__(self):

@@ -15,11 +15,11 @@ class TeacherPhotoSerializer(serializers.ModelSerializer):
 
 
 class InstituteSerializer(serializers.ModelSerializer):
-    photos = InstitutePhotoSerializer(many=True, read_only=True)
+    photos = InstitutePhotoSerializer(many=True)
 
     class Meta:
         model = Institute
-        fields = ('id', 'name', 'description', 'abbreviation', 'photos')
+        fields = ('id', 'name', 'description', 'abbreviation', 'logo', 'photos',)
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -29,6 +29,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class TeacherSerializer(serializers.ModelSerializer):
+    photos = TeacherPhotoSerializer(many=True)
+
     class Meta:
         model = Teacher
-        fields = '__all__'
+        fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
+                  'communication_rating', 'institute', 'bio', 'photos')
