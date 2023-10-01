@@ -7,7 +7,8 @@ class Institute(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     abbreviation = models.CharField(max_length=10)
-    logo = models.ImageField(upload_to='institute_logos',null=True,blank=True)
+    logo = models.ImageField(upload_to='institute_logos', null=True, blank=True)
+
     def __str__(self):
         return f'{self.name} ({self.abbreviation})'
 
@@ -25,6 +26,7 @@ class Department(models.Model):
     description = models.TextField()
     institute = models.ForeignKey(Institute, null=True, blank=False, on_delete=models.SET_NULL,
                                   related_name='departments')
+    logo = models.ImageField(upload_to='institute_logos', null=True, blank=True)
 
     def __str__(self):
         return f'{self.name}'
