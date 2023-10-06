@@ -28,7 +28,7 @@ class TeacherPhotoSerializer(serializers.ModelSerializer):
 
 
 class InstituteSerializer(serializers.ModelSerializer):
-    photos = InstitutePhotoSerializer(many=True)
+    photos = InstitutePhotoSerializer(many=True, required=False)
 
     class Meta:
         model = Institute
@@ -42,9 +42,9 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
 
 class TeacherSerializer(serializers.ModelSerializer):
-    photos = TeacherPhotoSerializer(many=True)
+    photos = TeacherPhotoSerializer(many=True, required=False)
     disciplines = DisciplineSerializer(many=True)
-    reviews = ReviewSerializer(many=True)
+    reviews = ReviewSerializer(many=True, required=False)
     class Meta:
         model = Teacher
         fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
