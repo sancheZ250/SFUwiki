@@ -26,7 +26,7 @@ class Department(models.Model):
     description = models.TextField()
     institute = models.ForeignKey(Institute, null=True, blank=False, on_delete=models.SET_NULL,
                                   related_name='departments')
-    logo = models.ImageField(upload_to='institute_logos', null=True, blank=True)
+    logo = models.ImageField(upload_to='department_logos', null=True, blank=True)
 
     def __str__(self):
         return f'{self.name}'
