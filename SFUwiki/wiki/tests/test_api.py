@@ -3,7 +3,7 @@ from django.db.models.fields.files import ImageFieldFile
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from wiki.serializers import InstituteSerializer, DepartmentSerializer
+from wiki.serializers import InstituteSerializer, DepartmentSerializer, InstituteWithoutPhotoSerializer
 from wiki.models import Institute, Department
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -32,7 +32,7 @@ class InstituteTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)  # Проверяем, что получено два объекта Institute
-        serializer_data = InstituteSerializer([self.institute1, self.institute2], many=True).data
+        serializer_data = InstituteWithoutPhotoSerializer([self.institute1, self.institute2], many=True).data
         for inst_data in serializer_data:
             inst_data.pop('logo', None)
 
@@ -127,7 +127,6 @@ class DepartmentTestCase(APITestCase):
         self.assertEqual(responce.data['name'], "Department 1")
         self.assertEqual(responce.data['description'], "Description 1")
         self.assertEqual(responce.data['institute'], self.institute.pk)
-        self.assertIsNone(responce.data['logo'])
 
     def test_create_department(self):
         url = reverse('institute_departments-list', args=[self.institute.pk])

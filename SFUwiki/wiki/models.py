@@ -34,7 +34,7 @@ class Department(models.Model):
 
 class Teacher(models.Model):
     name = models.CharField(max_length=100)
-    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL)
+    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
     alma_mater = models.CharField(max_length=100)
     bio = models.TextField()
     knowledge_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
