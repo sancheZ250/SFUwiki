@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from rest_framework import viewsets, generics
 from .models import Institute, Department, Teacher, Discipline, Review
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
-    ReviewSerializer, TeacherNameAndPhotoSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer
+    ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer
 
 
 def index(request):
@@ -11,7 +11,7 @@ def index(request):
 
 
 class TeachersByDepartmentList(generics.ListAPIView):
-    serializer_class = TeacherNameAndPhotoSerializer
+    serializer_class = TeacherCardSerializer
 
     def get_queryset(self):
         department_id = self.kwargs['department_id']
@@ -27,6 +27,7 @@ class DisciplineViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return SimpleDisciplineSerializer
         return DisciplineSerializer
+
 class InstituteViewSet(viewsets.ModelViewSet):
     queryset = Institute.objects.all()
 
@@ -52,9 +53,9 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
     #serializer_class = TeacherSerializer
     def get_serializer_class(self):
-        # Если выполняется действие "list" (получение списка), используем TeacherNameAndPhotoSerializer
+        # Если выполняется действие "list" (получение списка), используем TeacherCardSerializer
         if self.action == 'list':
-            return TeacherNameAndPhotoSerializer
+            return TeacherCardSerializer
         # Для всех остальных действий используем TeacherSerializer
         return TeacherSerializer
 

@@ -9,7 +9,7 @@ router.register(r'institutes', InstituteViewSet)
 
 institute_router = routers.NestedSimpleRouter(router, r'institutes', lookup='institute')
 institute_router.register(r'departments', DepartmentViewSet, basename='institute_departments')
-institute_router.register(r'teachers', TeacherViewSet, basename='institute-teachers')
+institute_router.register(r'teachers', TeacherViewSet, basename='institute_teachers')
 
 router.register(r'disciplines', DisciplineViewSet)
 

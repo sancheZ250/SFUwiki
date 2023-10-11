@@ -15,8 +15,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
-
 class TeacherPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherPhoto
@@ -37,13 +35,13 @@ class InstituteWithoutPhotoSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'abbreviation', 'logo')
 
 
-class TeacherNameAndPhotoSerializer(serializers.ModelSerializer):
+class TeacherCardSerializer(serializers.ModelSerializer):
     first_photo = serializers.SerializerMethodField()
 
     class Meta:
         model = Teacher
         fields = ('id', 'name', 'institute', 'department', 'first_photo', 'knowledge_rating', 'teaching_skill_rating',
-                  'easiness_rating', 'communication_rating',)
+                  'easiness_rating', 'communication_rating', 'review_count')
 
     def get_first_photo(self, obj):
         # Получаем первое фото преподавателя, если оно существует
@@ -56,11 +54,12 @@ class TeacherNameAndPhotoSerializer(serializers.ModelSerializer):
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
-    teachers = TeacherNameAndPhotoSerializer(many=True, required=False)
+    teachers = TeacherCardSerializer(many=True, required=False)
 
     class Meta:
         model = Department
         fields = ('id', 'name', 'description', 'institute', 'teachers')
+
 
 class SimpleDisciplineSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,18 +69,18 @@ class SimpleDisciplineSerializer(serializers.ModelSerializer):
 
 class TeacherSerializer(serializers.ModelSerializer):
     photos = TeacherPhotoSerializer(many=True, required=False)
-    disciplines = SimpleDisciplineSerializer(many=True)
+    disciplines = SimpleDisciplineSerializer(many=True, required=False)
     reviews = ReviewSerializer(many=True, required=False)
 
     class Meta:
         model = Teacher
         fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
-                  'communication_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',)
-
+                  'communication_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews', 'review_count')
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
-    teachers = TeacherNameAndPhotoSerializer(many=True, required=False)
+    teachers = TeacherCardSerializer(many=True, required=False)
+
     class Meta:
         model = Discipline
         fields = ('id', 'name', 'description', 'teachers')

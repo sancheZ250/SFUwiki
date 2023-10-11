@@ -76,9 +76,8 @@ class Review(models.Model):
 class Discipline(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    teachers = models.ManyToManyField(Teacher, related_name='disciplines')
-    logo = models.ImageField(upload_to='discipline_photo')
+    teachers = models.ManyToManyField(Teacher, related_name='disciplines', blank=True)
+    logo = models.ImageField(upload_to='discipline_photo', null=True, blank=True)
 
     def __str__(self):
         return self.name
-
