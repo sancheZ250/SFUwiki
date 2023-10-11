@@ -3,7 +3,8 @@ from django.http import HttpResponse
 from rest_framework import viewsets, generics
 from .models import Institute, Department, Teacher, Discipline, Review
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
-    ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer
+    ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
+    SimpleDepartmentSerializer
 
 
 def index(request):
@@ -28,6 +29,7 @@ class DisciplineViewSet(viewsets.ModelViewSet):
             return SimpleDisciplineSerializer
         return DisciplineSerializer
 
+
 class InstituteViewSet(viewsets.ModelViewSet):
     queryset = Institute.objects.all()
 
@@ -38,12 +40,16 @@ class InstituteViewSet(viewsets.ModelViewSet):
         return InstituteSerializer
 
 
-
 class DepartmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         institute_id = self.kwargs['institute_pk']
         return Department.objects.filter(institute_id=institute_id)
     serializer_class = DepartmentSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return SimpleDepartmentSerializer
+        return DepartmentSerializer
 
 
 class TeacherViewSet(viewsets.ModelViewSet):

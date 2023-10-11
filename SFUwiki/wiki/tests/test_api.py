@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status, serializers
 from wiki.serializers import InstituteSerializer, DepartmentSerializer, InstituteWithoutPhotoSerializer, \
-    TeacherCardSerializer, SimpleDisciplineSerializer
+    TeacherCardSerializer, SimpleDisciplineSerializer, SimpleDepartmentSerializer
 from wiki.models import Institute, Department, Teacher, TeacherPhoto, Review, Discipline
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -117,7 +117,7 @@ class DepartmentTestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)  # Проверяем, что получено два объекта Department
-        serializer_data = DepartmentSerializer([self.department1, self.department2], many=True).data
+        serializer_data = SimpleDepartmentSerializer([self.department1, self.department2], many=True).data
         self.assertEqual(serializer_data, response.data)
 
     def test_get_detail(self):
@@ -261,10 +261,8 @@ class TeacherTestCase(APITestCase):
         self.assertEqual(response.data['communication_rating'][:-2], str(self.teacher.communication_rating))
         self.assertEqual(response.data['review_count'], self.teacher.review_count)
 
-
         self.assertIsNotNone(response.data['photos'])
         self.assertEqual(response.data['photos'][0]['photo'], f'http://testserver{self.teacher_photo.photo.url}')
-
 
         self.assertIsNotNone(response.data['reviews'])
         self.assertEqual(response.data['reviews'][0]['comment'], self.review.comment)

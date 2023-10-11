@@ -61,6 +61,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'institute', 'teachers')
 
 
+class SimpleDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = '__all__'
+
+
 class SimpleDisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
