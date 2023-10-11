@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 
 
 class Institute(models.Model):
@@ -43,8 +46,15 @@ class Teacher(models.Model):
     communication_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     institute = models.ForeignKey(Institute, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
     review_count = models.PositiveIntegerField(default=0)
+
     def __str__(self):
         return self.name
+
+
+@receiver(pre_save, sender=Teacher)
+def check_department_institute(sender, instance, **kwargs):
+    if instance.department.institute != instance.institute:
+        raise ValidationError("Teacher's department must belong to the same institute.")
 
 
 rating_validator = [MinValueValidator(1), MaxValueValidator(5)]
