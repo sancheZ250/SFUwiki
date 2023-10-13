@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status, serializers
 from wiki.serializers import InstituteSerializer, DepartmentSerializer, InstituteWithoutPhotoSerializer, \
-    TeacherCardSerializer, SimpleDisciplineSerializer, SimpleDepartmentSerializer
+    TeacherCardSerializer, SimpleDisciplineSerializer, SimpleDepartmentSerializer, DisciplineSerializer
 from wiki.models import Institute, Department, Teacher, TeacherPhoto, Review, Discipline
 from django.core.files.uploadedfile import SimpleUploadedFile
 
@@ -227,7 +227,7 @@ class TeacherTestCase(APITestCase):
             easiness_rating=3,
             communication_rating=4,
             comment="Отзыв о преподавателе",
-            is_anonymous=False  # Установите значение True или False, в зависимости от вашего тест-кейса
+            is_anonymous=False
         )
         self.url = reverse('institute_teachers-detail', args=[self.institute.pk, self.teacher.pk])
 
@@ -308,3 +308,78 @@ class TeacherTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         self.assertFalse(Teacher.objects.filter(pk=self.teacher.id).exists())
+
+
+def fix_absolute_urls(data):
+    base_url = 'http://testserver'
+    for item in data:
+        item['logo'] = base_url + item['logo']
+    return data
+
+
+class DisciplineTestCase(APITestCase):
+    def setUp(self):
+        self.institute = Institute.objects.create(
+            name="Институт",
+            description="Описание института",
+            abbreviation="ИНСТ",
+        )
+
+        self.department = Department.objects.create(
+            name="Кафедра",
+            description="Описание кафедры",
+            institute=self.institute,
+        )
+
+        self.teacher = Teacher.objects.create(
+            name="Брежнев Руслан Владимирович",
+            department=self.department,
+            alma_mater="МГУ",
+            bio="Биография преподавателя",
+            knowledge_rating=5.0,
+            teaching_skill_rating=5.0,
+            easiness_rating=5.0,
+            communication_rating=5.0,
+            institute=self.institute,
+            review_count=0,
+        )
+        self.test_logo1 = SimpleUploadedFile('test.png', b'test_content', content_type='image/png')
+        self.test_logo2 = SimpleUploadedFile('test2.png', b'test_content2', content_type='image/png')
+        self.discipline1 = Discipline.objects.create(name='Discipline 1', description='Description 1',
+                                                     logo=self.test_logo1)
+        self.discipline2 = Discipline.objects.create(name='Discipline 2', description='Description 2',
+                                                     logo=self.test_logo2)
+        self.discipline1.teachers.add(self.teacher)
+        self.discipline2.teachers.add(self.teacher)
+
+    def test_get_list(self):
+        url = reverse('discipline-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        serialized_data = SimpleDisciplineSerializer([self.discipline1, self.discipline2], many=True).data
+        serialized_data = fix_absolute_urls(serialized_data)
+        self.assertEqual(serialized_data, response.data)
+
+    def test_get_detail(self):
+        url = reverse('discipline-detail', args=[self.discipline1.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        serialized_data = DisciplineSerializer(self.discipline1).data
+        serialized_data['logo'] = 'http://testserver' + serialized_data['logo']
+        self.assertEqual(serialized_data, response.data)
+
+    def test_create_discipline(self):
+        url = reverse('discipline-list')
+
+        data = {
+            'name': 'New Discipline',
+            'description': 'New Description',
+        }
+
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Discipline.objects.count(), 3)
+        discipline = Discipline.objects.get(name='New Discipline')
+        self.assertEqual(discipline.name, 'New Discipline')
+        self.assertEqual(discipline.description, 'New Description')

@@ -89,4 +89,4 @@ class DisciplineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Discipline
-        fields = ('id', 'name', 'description', 'teachers')
+        fields = ('id', 'name', 'description', 'teachers', 'logo')

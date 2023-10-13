@@ -57,7 +57,6 @@ class TeacherViewSet(viewsets.ModelViewSet):
         institute_id = self.kwargs['institute_pk']
         return Teacher.objects.filter(institute_id=institute_id)
 
-    #serializer_class = TeacherSerializer
     def get_serializer_class(self):
         # Если выполняется действие "list" (получение списка), используем TeacherCardSerializer
         if self.action == 'list':
