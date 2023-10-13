@@ -135,7 +135,7 @@ class TeacherSerializerTestCase(APITestCase):
         self.assertEqual(serializer.data['first_photo'], request.build_absolute_uri('/media/teacher_photo.jpg'))
 
     def test_teacher_serializer(self):
-        # Создайте объект Institute
+        # Создание объекта Institute
         institute_data = {
             'name': 'Example Institute',
             'description': 'This is an example institute',
@@ -151,7 +151,7 @@ class TeacherSerializerTestCase(APITestCase):
         }
         department = Department.objects.create(**department_data)
 
-        # Создайте объект Teacher
+        # Создание объекта Teacher
         teacher_data = {
             'name': 'John Doe',
             'institute': institute,
@@ -165,11 +165,11 @@ class TeacherSerializerTestCase(APITestCase):
         }
         teacher = Teacher.objects.create(**teacher_data)
 
-        # Создайте фото для учителя
+        # Создание фото для учителя
         photo_data = {'photo': 'teacher_photo.jpg', 'teacher': teacher}
         TeacherPhoto.objects.create(**photo_data)
 
-        # Создайте дисциплины
+        # Создание дисциплины
         discipline_data = {
             'name': 'Math',
             'description': 'math_math_math_math_math',
@@ -198,7 +198,7 @@ class TeacherSerializerTestCase(APITestCase):
 
         Review.objects.create(**review_data)
 
-        # Создайте сериализатор
+        # Создание сериализатора
         serializer = TeacherSerializer(instance=teacher)
 
         # Проверьте, что сериализатор возвращает ожидаемые данные
