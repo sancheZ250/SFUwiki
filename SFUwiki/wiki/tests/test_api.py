@@ -242,10 +242,7 @@ class TeacherTestCase(APITestCase):
                                                        [self.teacher_photo, self.teacher_photo2]):
             self.assertEqual(teacher_data['first_photo'], f'http://testserver{teacherphoto.photo.url}')
             self.assertEqual(teacher_data['name'], teacher.name)
-            self.assertEqual(teacher_data['knowledge_rating'][:-2], str(teacher.knowledge_rating))
-            self.assertEqual(teacher_data['teaching_skill_rating'][:-2], str(teacher.teaching_skill_rating))
-            self.assertEqual(teacher_data['easiness_rating'][:-2], str(teacher.easiness_rating))
-            self.assertEqual(teacher_data['communication_rating'][:-2], str(teacher.communication_rating))
+            self.assertEqual(float(teacher_data['avg_rating'][:-2]), float(teacher.avg_rating))
             self.assertEqual(teacher_data['review_count'], teacher.review_count)
 
     def test_get_detail(self):

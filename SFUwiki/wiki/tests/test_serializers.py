@@ -106,12 +106,7 @@ class TeacherSerializerTestCase(APITestCase):
         teacher_data = {
             'name': 'John Doe',
             'institute': institute,
-            'department': department,
-            'knowledge_rating': 5,
-            'teaching_skill_rating': 4,
-            'easiness_rating': 3,
-            'communication_rating': 5,
-            'review_count': 10,
+            'department': department
         }
         teacher = Teacher.objects.create(**teacher_data)
 
@@ -126,11 +121,7 @@ class TeacherSerializerTestCase(APITestCase):
 
         # Проверка, что сериализатор возвращает ожидаемые данные
         self.assertEqual(serializer.data['name'], 'John Doe')
-        self.assertEqual(serializer.data['knowledge_rating'], '5.000')
-        self.assertEqual(serializer.data['teaching_skill_rating'], '4.000')
-        self.assertEqual(serializer.data['easiness_rating'], '3.000')
-        self.assertEqual(serializer.data['communication_rating'], '5.000')
-        self.assertEqual(serializer.data['review_count'], 10)
+        self.assertEqual(serializer.data['avg_rating'], '0.000')
         self.assertTrue('first_photo' in serializer.data)
         self.assertEqual(serializer.data['first_photo'], request.build_absolute_uri('/media/teacher_photo.jpg'))
 
@@ -160,7 +151,7 @@ class TeacherSerializerTestCase(APITestCase):
             'teaching_skill_rating': 4,
             'easiness_rating': 3,
             'communication_rating': 5,
-            'review_count': 10,
+            'review_count': 9,
             'bio': 'This is John Doe, a great teacher.',
         }
         teacher = Teacher.objects.create(**teacher_data)
