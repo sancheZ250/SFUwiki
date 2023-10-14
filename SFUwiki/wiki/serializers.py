@@ -40,8 +40,7 @@ class TeacherCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'institute', 'department', 'first_photo', 'knowledge_rating', 'teaching_skill_rating',
-                  'easiness_rating', 'communication_rating', 'review_count')
+        fields = ('id', 'name', 'institute', 'department', 'first_photo', 'avg_rating', 'review_count')
 
     def get_first_photo(self, obj):
         # Получаем первое фото преподавателя, если оно существует
@@ -81,7 +80,8 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
-                  'communication_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews', 'review_count')
+                  'communication_rating', 'avg_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',
+                  'review_count')
 
 
 class DisciplineSerializer(serializers.ModelSerializer):

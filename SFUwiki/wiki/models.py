@@ -44,6 +44,7 @@ class Teacher(models.Model):
     teaching_skill_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     easiness_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     communication_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
+    avg_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     institute = models.ForeignKey(Institute, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
     review_count = models.PositiveIntegerField(default=0)
 
@@ -51,10 +52,7 @@ class Teacher(models.Model):
         return self.name
 
 
-@receiver(pre_save, sender=Teacher)
-def check_department_institute(sender, instance, **kwargs):
-    if instance.department.institute != instance.institute:
-        raise ValidationError("Teacher's department must belong to the same institute.")
+
 
 
 rating_validator = [MinValueValidator(1), MaxValueValidator(5)]

@@ -201,7 +201,7 @@ class TeacherSerializerTestCase(APITestCase):
         # Создание сериализатора
         serializer = TeacherSerializer(instance=teacher)
 
-        # Проверьте, что сериализатор возвращает ожидаемые данные
+        # Проверка, что сериализатор возвращает ожидаемые данные
         self.assertEqual(serializer.data['name'], 'John Doe')
         self.assertEqual(serializer.data['knowledge_rating'], '5.000')
         self.assertEqual(serializer.data['teaching_skill_rating'], '4.000')
