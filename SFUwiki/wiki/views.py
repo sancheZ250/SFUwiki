@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+
 from .models import Institute, Department, Teacher, Discipline, Review
+from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
     ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
-    SimpleDepartmentSerializer
+    SimpleDepartmentSerializer, ModerTeacherSerializer
 
 
 def index(request):
@@ -53,9 +56,11 @@ class DepartmentViewSet(viewsets.ModelViewSet):
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminOrAuthor]
+
     def get_queryset(self):
         institute_id = self.kwargs['institute_pk']
-        return Teacher.objects.filter(institute_id=institute_id)
+        return Teacher.objects.filter(institute_id=institute_id, is_published=True)
 
     def get_serializer_class(self):
         # Если выполняется действие "list" (получение списка), используем TeacherCardSerializer
@@ -65,12 +70,18 @@ class TeacherViewSet(viewsets.ModelViewSet):
         return TeacherSerializer
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
+class ModerTeacherViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsSuperUser]
+    def get_queryset(self):
+        institute_id = self.kwargs['institute_pk']
+        return Teacher.objects.filter(institute_id=institute_id, is_published=False)
+
+    def get_serializer_class(self):
+        return ModerTeacherSerializer
 
 
 class TeacherReviewViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAdminOrAuthor]
     serializer_class = ReviewSerializer
 
     def get_queryset(self):

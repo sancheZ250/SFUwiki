@@ -36,10 +36,11 @@ class Department(models.Model):
 
 
 class Teacher(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, db_index=True)
     department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
     alma_mater = models.CharField(max_length=100)
     bio = models.TextField()
+    created_by = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
     knowledge_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     teaching_skill_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     easiness_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
@@ -47,12 +48,14 @@ class Teacher(models.Model):
     avg_rating = models.DecimalField(max_digits=4, decimal_places=3, default=0)
     institute = models.ForeignKey(Institute, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
     review_count = models.PositiveIntegerField(default=0)
+    date_published = models.DateTimeField(auto_now_add=True)
+    is_published = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
-
-
+    class Meta:
+        ordering = ['-avg_rating']
 
 
 rating_validator = [MinValueValidator(1), MaxValueValidator(5)]

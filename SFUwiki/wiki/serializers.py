@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
+
 from .models import Institute, InstitutePhoto, Department, Teacher, TeacherPhoto, Discipline, Review
 
 
@@ -9,10 +11,12 @@ class InstitutePhotoSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    student = serializers.HiddenField(default=CurrentUserDefault())
 
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ('teacher', 'student', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
+                  'communication_rating', 'comment', 'created_at', 'is_anonymous')
 
 
 class TeacherPhotoSerializer(serializers.ModelSerializer):
@@ -76,12 +80,25 @@ class TeacherSerializer(serializers.ModelSerializer):
     photos = TeacherPhotoSerializer(many=True, required=False)
     disciplines = SimpleDisciplineSerializer(many=True, required=False)
     reviews = ReviewSerializer(many=True, required=False)
+    created_by = serializers.HiddenField(default=CurrentUserDefault())
 
     class Meta:
         model = Teacher
         fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
                   'communication_rating', 'avg_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',
-                  'review_count')
+                  'review_count', 'date_published', 'created_by',)
+
+
+class ModerTeacherSerializer(serializers.ModelSerializer):
+    photos = TeacherPhotoSerializer(many=True, required=False)
+    disciplines = SimpleDisciplineSerializer(many=True, required=False)
+    reviews = ReviewSerializer(many=True, required=False)
+
+    class Meta:
+        model = Teacher
+        fields = ('name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
+                  'communication_rating', 'avg_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',
+                  'review_count', 'date_published', 'created_by', 'is_published',)
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
