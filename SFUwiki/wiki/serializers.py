@@ -87,7 +87,7 @@ class TeacherSerializer(serializers.ModelSerializer):
                   'communication_rating', 'avg_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',
                   'review_count', 'date_published', 'created_by',)
         read_only_fields = ['knowledge_rating', 'teaching_skill_rating', 'easiness_rating', 'communication_rating',
-                            'avg_rating', 'review_count']
+                            'avg_rating', 'review_count', 'reviews']
 
 
 class ModerTeacherSerializer(serializers.ModelSerializer):
