@@ -33,9 +33,9 @@ def update_teacher_ratings(sender, instance, created, **kwargs):
                                             (total_ratings + 1)
         new_teacher_easiness_rating = (easiness_rating * total_ratings + review_easiness_rating) / (total_ratings + 1)
         new_teacher_communication_rating = (communication_rating * total_ratings + review_communication_rating) / (
-                    total_ratings + 1)
+                total_ratings + 1)
         new_teacher_avg_rating = (new_teacher_communication_rating + new_teacher_easiness_rating +
-                                  new_teacher_teaching_skill_rating + new_teacher_knowledge_rating)/4
+                                  new_teacher_teaching_skill_rating + new_teacher_knowledge_rating) / 4
         teacher.easiness_rating = new_teacher_easiness_rating
         teacher.teaching_skill_rating = new_teacher_teaching_skill_rating
         teacher.communication_rating = new_teacher_communication_rating
@@ -62,11 +62,13 @@ def update_teacher_ratings_on_review_delete(sender, instance, **kwargs):
 
         total_ratings = teacher.review_count - 1
         new_teacher_knowledge_rating = (knowledge_rating * review_count - review_knowledge_rating) / total_ratings
-        new_teacher_teaching_skill_rating = (teaching_skill_rating * review_count - review_teaching_skill_rating) / total_ratings
+        new_teacher_teaching_skill_rating = (
+                                                    teaching_skill_rating * review_count - review_teaching_skill_rating) / total_ratings
         new_teacher_easiness_rating = (easiness_rating * review_count - review_easiness_rating) / total_ratings
-        new_teacher_communication_rating = (communication_rating * review_count - review_communication_rating) / total_ratings
+        new_teacher_communication_rating = (
+                                                   communication_rating * review_count - review_communication_rating) / total_ratings
         new_teacher_avg_rating = (new_teacher_communication_rating + new_teacher_easiness_rating +
-                                new_teacher_teaching_skill_rating + new_teacher_knowledge_rating) / 4
+                                  new_teacher_teaching_skill_rating + new_teacher_knowledge_rating) / 4
 
         teacher.easiness_rating = new_teacher_easiness_rating
         teacher.teaching_skill_rating = new_teacher_teaching_skill_rating
@@ -85,3 +87,46 @@ def update_teacher_ratings_on_review_delete(sender, instance, **kwargs):
 
     teacher.save()
 
+
+@receiver(pre_save, sender=Review)
+def update_teacher_ratings_on_review(sender, instance, **kwargs):
+    try:
+        old_review = Review.objects.get(pk=instance.pk)
+    except Review.DoesNotExist:
+        old_review = None
+
+    if old_review:
+        if (
+                instance.knowledge_rating != old_review.knowledge_rating or
+                instance.teaching_skill_rating != old_review.teaching_skill_rating or
+                instance.easiness_rating != old_review.easiness_rating or
+                instance.communication_rating != old_review.communication_rating
+        ):
+            teacher = instance.teacher
+            rating_names = (
+                'knowledge_rating',
+                'teaching_skill_rating',
+                'easiness_rating',
+                'communication_rating'
+            )
+            old_ratings = (
+                old_review.knowledge_rating,
+                old_review.teaching_skill_rating,
+                old_review.easiness_rating,
+                old_review.communication_rating
+            )
+            new_ratings = (
+                instance.knowledge_rating,
+                instance.teaching_skill_rating,
+                instance.easiness_rating,
+                instance.communication_rating
+            )
+            total_ratings = teacher.review_count
+            for rating_name, old, new in zip(rating_names, old_ratings, new_ratings):
+                if old != new:
+                    recalc_rating = (getattr(teacher, rating_name) * total_ratings - old + new) / total_ratings
+                    setattr(teacher, rating_name, recalc_rating)
+            new_avg_rating = (teacher.communication_rating + teacher.easiness_rating + teacher.teaching_skill_rating +
+                              teacher.knowledge_rating) / 4
+            teacher.avg_rating = new_avg_rating
+            teacher.save()

@@ -5,7 +5,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 
 from .models import Institute, Department, Teacher, Discipline, Review
-from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser
+from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser, IsCommentAuthor
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
     ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
     SimpleDepartmentSerializer, ModerTeacherSerializer
@@ -89,16 +89,20 @@ class ModerTeacherViewSet(viewsets.ModelViewSet):
 #         teacher_id = self.kwargs.get('teacher_id')
 #         return Review.objects.filter(teacher_id=teacher_id)
 class TeacherReviewList(ListCreateAPIView):
-    permission_classes = [IsAdminOrAuthor]
+    permission_classes = [IsCommentAuthor]
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
         return Review.objects.filter(teacher_id=teacher_id)
 
+    def perform_create(self, serializer):
+        teacher_id = self.kwargs['teacher_id']
+        serializer.save(teacher_id=teacher_id)
+
 
 class TeacherReviewDetail(RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminOrAuthor]
+    permission_classes = [IsCommentAuthor]
     serializer_class = ReviewSerializer
     lookup_field = 'id'
 

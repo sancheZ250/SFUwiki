@@ -37,7 +37,7 @@ class Department(models.Model):
 
 class Teacher(models.Model):
     name = models.CharField(max_length=100, db_index=True)
-    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL, related_name='teachers')
+    department = models.ForeignKey(Department, null=True, blank=True, on_delete=models.SET_NULL,related_name='teachers')
     alma_mater = models.CharField(max_length=100)
     bio = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
