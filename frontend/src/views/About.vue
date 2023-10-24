@@ -3,7 +3,5 @@
 </script>
 
 <template>
-<h1>Header</h1>
-<RouterView />
+<h1>About</h1>
 </template>
-

@@ -66,7 +66,7 @@ INTERNAL_IPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:8080",  # Замените на адрес вашего фронтенда
+    "http://localhost:5173",  # Замените на адрес вашего фронтенда
     # Другие разрешенные домены, если необходимо
 ]
 
@@ -109,7 +109,6 @@ DATABASES = {
         'PORT': 5432,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
