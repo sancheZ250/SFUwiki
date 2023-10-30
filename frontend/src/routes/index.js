@@ -7,10 +7,16 @@ import { createRouter, createWebHistory} from 'vue-router';
 const Home = () => import('../views/Home.vue');
 const About = () => import('../views/About.vue');
 const Institutes = () => import('../views/Institutes.vue');
+const RegisterView = () => import('../views/Register.vue');
+const LoginView = () => import('../views/Login.vue');
+
+
 const routes = [
-    { path : '/', component:Home},
-    { path : '/about', component:About},
-    { path : '/institutes', component:Institutes},
+    { path : '/', component:Home, name: 'home'},
+    { path : '/about', component:About, name: 'about'},
+    { path : '/institutes', component:Institutes, name: 'institutes'},
+    { path : '/register', component:RegisterView, name: 'register'},
+    { path : '/login', component:LoginView, name: 'login'},
 ];
 
 const router = createRouter({
