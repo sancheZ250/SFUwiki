@@ -47,8 +47,6 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         institute_id = self.kwargs['institute_pk']
         return Department.objects.filter(institute_id=institute_id)
 
-    serializer_class = DepartmentSerializer
-
     def get_serializer_class(self):
         if self.action == 'list':
             return SimpleDepartmentSerializer

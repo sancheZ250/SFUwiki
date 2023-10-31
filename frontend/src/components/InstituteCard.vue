@@ -7,7 +7,9 @@ defineProps({
 <template>
     <div class="max-w-sm bg-gray-900 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
       <a href="#">
+        <div class="image-container">
           <img class="rounded-t-lg" :src="institute.logo" :alt="institute.abbreviation" />
+        </div>
       </a>
       <div class="p-5">
           <a href="#">
@@ -25,5 +27,15 @@ defineProps({
   </template>
 
 <style scoped>
+.image-container {
+  width: 100%; /* Фиксированная ширина */
+  height: 350px; /* Фиксированная высота */
+  overflow: hidden; /* Обрезаем содержимое, которое не помещается */
+}
 
+.image-container img {
+  width: 100%; /* Заполнение 100% ширины контейнера */
+  height: 100%; /* Заполнение 100% высоты контейнера */
+  object-fit: cover; /* Заполнение контейнера с сохранением соотношения сторон и обрезкой */
+}
 </style>

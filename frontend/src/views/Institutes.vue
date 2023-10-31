@@ -21,3 +21,15 @@ onMounted(async () => {
     </div>
   </template>
 
+
+<style scoped>
+  .institute-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .institute-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+</style>
+

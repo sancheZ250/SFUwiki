@@ -2,7 +2,7 @@
   <nav class="bg-white border-gray-200 dark:bg-gray-900">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
       <router-link to="/" class="flex items-center">
-        <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
+        <img src="../assets/logo.jpg" class="h-24 mr-3"/>
         <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SFUwiki</span>
       </router-link>
       <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
@@ -13,17 +13,28 @@
       </button>
       <div class="hidden w-full md:block md:w-auto" id="navbar-default">
         <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <li>
+            <router-link to="/institutes" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover-text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">Институты</router-link>
+          </li>
           <li>
-            <router-link to="/institutes" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">Институты</router-link>
+            <button @click="toggleDarkMode" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover-text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">
+            Переключить тему
+          </button>
           </li>
           <li>
             <router-link to="/teachers" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover-bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover-text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">Преподаватели</router-link>
           </li>
-          <li>
+          <li v-if="!$store.getters.isAuthenticated">
             <router-link to="/register" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover-bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover-text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">Регистрация</router-link>
           </li>
-          <li>
-            <router-link to="/login" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover-bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover-text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">Войти</router-link>
+          <li v-if="!$store.getters.isAuthenticated">
+            <router-link to="/login" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover.bg-gray-100 md.hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover-text-blue-500 dark:hover-bg-gray-700 dark:hover-text-white md:dark:hover-bg-transparent">Войти</router-link>
+          </li>
+          <li v-if="$store.getters.isAuthenticated">
+            <div class="flex items-center">
+              <span class="mr-2 text-gray-900 dark:text-white">{{ this.$store.getters.getUsername }}</span>
+              <button @click="logout" class="text-blue-700 hover:underline text-sm font-medium">Выйти</button>
+            </div>
           </li>
         </ul>
       </div>
@@ -32,5 +43,32 @@
 </template>
 
 <script>
-
+export default {
+  methods: {
+    toggleDarkMode() {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      if (isDarkMode) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('color-theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('color-theme', 'dark');
+      }
+    },
+    async logout() {
+      try {
+        // Отправьте запрос на выход с токеном в заголовке
+        await this.$axios.post('auth/token/logout/', null);
+        // Вызовите действие 'logout' из вашего хранилища, чтобы очистить данные о пользователе и токене
+        this.$store.dispatch('logout');
+        
+        // Перенаправьтесь на страницу login
+        this.$router.push({ name: 'login' });
+      } catch (error) {
+        // Обработайте ошибку, если выход не удался
+        console.error('Ошибка при выходе:', error);
+      }
+    },
+  },
+};
 </script>
