@@ -28,7 +28,7 @@ class TeacherPhotoSerializer(serializers.ModelSerializer):
 class SimpleDepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = '__all__'
+        fields = ('id', 'name', 'institute', 'logo',)
 
 
 class InstituteSerializer(serializers.ModelSerializer):
