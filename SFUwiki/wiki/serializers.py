@@ -34,6 +34,7 @@ class SimpleDepartmentSerializer(serializers.ModelSerializer):
 class InstituteSerializer(serializers.ModelSerializer):
     photos = InstitutePhotoSerializer(many=True, required=False)
     departments = SimpleDepartmentSerializer(many=True, required=False)
+
     class Meta:
         model = Institute
         fields = ('id', 'name', 'description', 'abbreviation', 'logo', 'photos', 'departments',)
@@ -67,8 +68,6 @@ class DepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = ('id', 'name', 'description', 'institute', 'teachers')
-
-
 
 
 class SimpleDisciplineSerializer(serializers.ModelSerializer):

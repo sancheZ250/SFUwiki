@@ -3,9 +3,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
-import InstituteInfo from '../components/InstituteInfo.vue'; // Импортируйте компонент InstituteInfo
-import DepartmentCard from '../components/DepartmentCard.vue'; // Импортируйте компонент DepartmentCard
-
+import InstituteInfo from '../components/InstituteInfo.vue';
+import DepartmentCard from '../components/DepartmentCard.vue';
 const institute = ref({});
 
 const fetchInstitute = async () => {
@@ -30,7 +29,6 @@ onMounted(() => {
       <div class="bg-gray-100 dark:bg-gray-800 py-8">
         <div class="container mx-auto p-6 bg-white dark:bg-gray-700 shadow-lg rounded-lg">
           <InstituteInfo :institute="institute" />
-  
           <h3 class="text-2xl text-gray-900 dark:text-white mt-8">Кафедры института:</h3>
   
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">

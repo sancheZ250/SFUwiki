@@ -66,7 +66,7 @@ class TeacherPhoto(models.Model):
     photo = models.ImageField(upload_to='teachers_photo')
 
     def __str__(self):
-        return f'{self.pk} фото преподавателя {self.teacher.name}'
+        return f'{self.pk} фото преподавателя {self.teacher}'
 
 
 class Review(models.Model):

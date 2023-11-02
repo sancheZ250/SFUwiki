@@ -10,18 +10,15 @@ from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSeria
     ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
     SimpleDepartmentSerializer, ModerTeacherSerializer
 
-
 class TeachersByDepartmentList(generics.ListAPIView):
     serializer_class = TeacherCardSerializer
 
     def get_queryset(self):
         department_id = self.kwargs['department_id']
-        return Teacher.objects.filter(department_id=department_id)
+        return Teacher.objects.select_related('department').filter(department_id=department_id)
 
 
 # API-view:
-
-
 class DisciplineViewSet(viewsets.ModelViewSet):
     queryset = Discipline.objects.all()
     serializer_class = DisciplineSerializer
@@ -38,14 +35,13 @@ class InstituteViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return InstituteWithoutPhotoSerializer
-        # Для всех остальных действий используем InstituteSerializer
         return InstituteSerializer
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         institute_id = self.kwargs['institute_pk']
-        return Department.objects.filter(institute_id=institute_id)
+        return Department.objects.select_related('institute').filter(institute_id=institute_id)
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -58,13 +54,13 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         institute_id = self.kwargs['institute_pk']
-        return Teacher.objects.filter(institute_id=institute_id, is_published=True)
+        if self.action == 'list':
+            return Teacher.objects.prefetch_related('photos').filter(institute_id=institute_id, is_published=True)
+        return Teacher.objects.select_related('institute').prefetch_related('photos').filter(institute_id=institute_id, is_published=True)
 
     def get_serializer_class(self):
-        # Если выполняется действие "list" (получение списка), используем TeacherCardSerializer
         if self.action == 'list':
             return TeacherCardSerializer
-        # Для всех остальных действий используем TeacherSerializer
         return TeacherSerializer
 
 
