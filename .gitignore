@@ -128,3 +128,6 @@ Control.ca-list
 Control.ca-bundle 
 Control.system-ca-bundle 
 GitHub.sublime-settings 
+SFUwiki/wiki/__pycache__/models.cpython-312.pyc
+SFUwiki/wiki/__pycache__/serializers.cpython-312.pyc
+SFUwiki/wiki/__pycache__/views.cpython-312.pyc
