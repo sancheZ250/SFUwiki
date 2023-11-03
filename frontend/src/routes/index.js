@@ -10,7 +10,7 @@ const Institutes = () => import('../views/Institutes.vue');
 const RegisterView = () => import('../views/Register.vue');
 const LoginView = () => import('../views/Login.vue');
 const InstituteDetail = () => import('../views/InstituteDetail.vue');
-
+const DepartmentDetail = () => import('../views/DepartmentDetail.vue');
 
 const routes = [
     { path : '/', component:Home, name: 'home'},
@@ -19,6 +19,7 @@ const routes = [
     { path : '/institutes/:id', component:InstituteDetail, name: 'institute-detail'},
     { path : '/register', component:RegisterView, name: 'register'},
     { path : '/login', component:LoginView, name: 'login'},
+    { path : '/institutes/:instituteId/department/:departmentId/', component:DepartmentDetail, name:'department-detail'},
 ];
 
 const router = createRouter({
