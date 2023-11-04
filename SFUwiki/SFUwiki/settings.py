@@ -104,7 +104,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'SFUwiki',
         'USER': 'postgres',
-        'PASSWORD': 'qweewqqwe',
+        'PASSWORD': 'qweeewq123',
         'HOST': 'localhost',
         'PORT': 5432,
     }
