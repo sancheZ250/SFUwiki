@@ -69,9 +69,6 @@ export default {
         await this.$axios.post('auth/token/logout/', null);
         // Вызовите действие 'logout' из вашего хранилища, чтобы очистить данные о пользователе и токене
         this.$store.dispatch('logout');
-        
-        // Перенаправьтесь на страницу login
-        this.$router.push({ name: 'login' });
       } catch (error) {
         // Обработайте ошибку, если выход не удался
         console.error('Ошибка при выходе:', error);

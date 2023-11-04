@@ -61,7 +61,7 @@
           // Обработка успешного входа
           console.log("Пользователь успешно вошел в систему:", loginResponse.data);
           this.$store.dispatch('login', { username: currentUserResponse.data.username, token: loginResponse.data.auth_token, userId: currentUserResponse.data.id});
-          router.push({ name: "home" });
+          router.go(-1);
         } catch (error) {
           // Обработка ошибок входа
           this.loginError = "Ошибка при входе. Проверьте имя пользователя и пароль.";

@@ -11,13 +11,19 @@ class InstitutePhotoSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    student = serializers.HiddenField(default=CurrentUserDefault())
+    student = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+        write_only=True
+    )
+    student_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Review
         fields = ('id', 'teacher_id', 'student', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
-                  'communication_rating', 'comment', 'created_at', 'is_anonymous')
+                  'communication_rating', 'comment', 'created_at', 'is_anonymous', 'student_name')
 
+    def get_student_name(self, obj):
+        return obj.student.username
 
 class TeacherPhotoSerializer(serializers.ModelSerializer):
     class Meta:

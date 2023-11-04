@@ -104,3 +104,13 @@ class TeacherReviewDetail(RetrieveUpdateDestroyAPIView):
         review_id = self.kwargs['id']
         teacher_id = self.kwargs['teacher_id']
         return Review.objects.filter(teacher_id=teacher_id, id=review_id)
+
+
+class AllTeachersAPIView(ListCreateAPIView):
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TeacherCardSerializer
+        return TeacherSerializer
+
+    def get_queryset(self):
+        return Teacher.objects.filter(is_published=True)
