@@ -3,12 +3,15 @@ from django.http import HttpResponse
 from rest_framework import viewsets, generics
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.pagination import PageNumberPagination
 
+from SFUwiki.pagination import AllTeacherPagination
 from .models import Institute, Department, Teacher, Discipline, Review
 from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser, IsCommentAuthor
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
     ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
     SimpleDepartmentSerializer, ModerTeacherSerializer
+
 
 class TeachersByDepartmentList(generics.ListAPIView):
     serializer_class = TeacherCardSerializer
@@ -107,6 +110,7 @@ class TeacherReviewDetail(RetrieveUpdateDestroyAPIView):
 
 
 class AllTeachersAPIView(ListCreateAPIView):
+    pagination_class = AllTeacherPagination
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TeacherCardSerializer
