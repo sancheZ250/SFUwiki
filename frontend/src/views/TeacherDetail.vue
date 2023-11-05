@@ -1,14 +1,18 @@
 <template>
   <div>
-    <TeacherInfo :teacher="teacherData" :photo="teacherAvatar" />
-    <InstituteCarousel :photos="teacherPhotosForCarousel" />
-    <TeacherReviews :reviews="teacherReviews" :teacherName="teacherData.name" />
-    <template v-if="isAuthenticated">
+    <div class="teacher-info">
+      <TeacherInfo :teacher="teacherData" :photo="teacherAvatar" />
+      <InstituteCarousel :photos="teacherPhotosForCarousel" />
+    </div>
+    <div class="review-container">
+      <template v-if="isAuthenticated">
       <template v-if="hasUserReviewed">
         <p>Вы уже оставили отзыв на этой странице преподавателя.</p>
       </template>
       <template v-else>
-        <ReviewForm :teacherId="teacherData.id" :addReview="addReview" />
+        <div class="review-form">
+          <ReviewForm :teacherId="teacherData.id" :addReview="addReview" />
+        </div>
       </template>
     </template>
     <template v-else>
@@ -18,6 +22,10 @@
         <router-link to="/register" class="text-blue-500">зарегистрируйтесь</router-link>.
       </p>
     </template>
+    <div class="review">
+      <TeacherReviews :reviews="teacherReviews" :teacherName="teacherData.name" />
+    </div>
+      </div>
   </div>
 </template>
 
@@ -65,3 +73,26 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style>
+.teacher-info {
+  float: right;
+  width: 40%;
+  max-height: 200px;
+  }
+
+
+.review-container {
+  display: flex;
+  flex-direction: column; /* Это задаст вертикальное расположение */
+}
+
+.review {
+
+}
+
+.review-form {
+  float: left;
+}
+
+</style>
