@@ -1,5 +1,5 @@
 <template>
-    <Carousel>
+    <Carousel class="dark:bg-gray-900">
         <Slide v-for="photo in photos" :key="photo">
             <img class="carousel__item" :src="photo.photo" alt="photo">
         </Slide>
