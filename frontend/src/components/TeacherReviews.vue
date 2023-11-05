@@ -5,7 +5,7 @@
             <div v-for="review in reviews" :key="review.id" class="bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-500 rounded-lg shadow-md p-6">
                 <div class="flex items-center mb-4">
                     <div class="w-12 h-12 rounded-full overflow-hidden">
-                        <img :src="review.is_anonymous ? 'path-to-anonymous-image' : review.reviewer_photo"
+                        <img src="../assets/anon.jpg"
                             alt="Reviewer Image" class="w-full h-full object-cover" />
                     </div>
                     <div class="ml-4">
