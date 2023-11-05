@@ -4,7 +4,8 @@ from rest_framework import viewsets, generics
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from rest_framework.pagination import PageNumberPagination
-
+from django.db.models import Q
+from rest_framework import generics, filters
 from SFUwiki.pagination import AllTeacherPagination
 from .models import Institute, Department, Teacher, Discipline, Review
 from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser, IsCommentAuthor
@@ -111,6 +112,8 @@ class TeacherReviewDetail(RetrieveUpdateDestroyAPIView):
 
 class AllTeachersAPIView(ListCreateAPIView):
     pagination_class = AllTeacherPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TeacherCardSerializer

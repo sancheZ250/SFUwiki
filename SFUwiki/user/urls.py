@@ -1,10 +1,12 @@
 from django.urls import path, include, re_path
 
+from user.views import IsModeratorAPI
 
 urlpatterns = [
     path('api/v1/drf-auth/', include('rest_framework.urls')),
     path('api/v1/auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
+    path('is_moder/', IsModeratorAPI.as_view())
 ]
 
 # /api/v1/drf-auth/login/ - POST с username и password, логиним пользователя

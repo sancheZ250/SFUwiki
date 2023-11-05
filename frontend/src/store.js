@@ -6,6 +6,8 @@ const store = createStore({
     token: localStorage.getItem('token') || null, 
     userId: localStorage.getItem('userId') || null,
     username: localStorage.getItem('username') || null, 
+    isModerator: localStorage.getItem('isModerator') === 'true' || false, // Добавляем поле isModerator
+    isAdmin: localStorage.getItem('isAdmin') === 'true' || false,
   },
   mutations: {
     setUserId(state, userId) {
@@ -32,6 +34,18 @@ const store = createStore({
       state.token = null;
       localStorage.removeItem('token'); // Удаление токена из localStorage
     },
+    setModeratorAndAdminStatus(state, { isModerator, isAdmin }) {
+      state.isModerator = isModerator;
+      state.isAdmin = isAdmin;
+      localStorage.setItem('isModerator', isModerator ? 'true' : 'false');
+      localStorage.setItem('isAdmin', isAdmin ? 'true' : 'false');
+    },
+    clearModeratorAndAdminStatus(state){
+      state.isAdmin = null;
+      state.isModerator = null;
+      localStorage.removeItem('isAdmin');
+      localStorage.removeItem('isModerator');
+    }
   },
   actions: {
     login({ commit }, { userId, username, token }) {
@@ -43,6 +57,10 @@ const store = createStore({
       commit('clearUserId');
       commit('clearUsername');
       commit('clearToken');
+      commit('clearModeratorAndAdminStatus');
+    },
+    setModeratorAndAdminStatus({ commit }, { isModerator, isAdmin }) {
+      commit('setModeratorAndAdminStatus', { isModerator, isAdmin });
     },
   },
   getters: {
@@ -50,6 +68,8 @@ const store = createStore({
     getUsername: (state) => state.username,
     isAuthenticated: (state) => !!state.token, // Проверка наличия токена для определения авторизации
     getToken: (state) => state.token,
+    isModerator: (state) => state.isModerator,
+    isAdmin: (state) => state.isAdmin,
   },
 });
 

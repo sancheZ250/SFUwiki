@@ -49,6 +49,8 @@
     },
     methods: {
       async loginUser() {
+        let isModerator = false;
+        let isAdmin = false;
         try {
           // Шаг 1: Вход с получением токена
           const loginResponse = await axios.post("auth/token/login/", this.userData);
@@ -61,6 +63,11 @@
           // Обработка успешного входа
           console.log("Пользователь успешно вошел в систему:", loginResponse.data);
           this.$store.dispatch('login', { username: currentUserResponse.data.username, token: loginResponse.data.auth_token, userId: currentUserResponse.data.id});
+          const isModerOrAdminResponse = await axios.get("/is_moder/");
+          isModerator = isModerOrAdminResponse.data.is_superuser;
+          isAdmin = isModerOrAdminResponse.data.is_admin;
+          this.$store.dispatch('setModeratorAndAdminStatus', { isModerator: isModerator, isAdmin: isAdmin });
+          console.log("Права пользователя", isModerator, isAdmin);
           router.go(-1);
         } catch (error) {
           // Обработка ошибок входа

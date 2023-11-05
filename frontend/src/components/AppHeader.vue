@@ -24,6 +24,12 @@
             Переключить тему
           </button>
           </li>
+          <li>
+            <router-link to="/add_teacher" class="block py-2 pl-3 pr-4 text-gray-900 bg-orange rounded hover:bg-orange-600 md:hover-bg-transparent md:border-0 md:hover:text-grey-100 dark:bg-orange md:p-0 dark:text-grey-100 md:dark:hover-text-grey-100 dark:hover-bg-orange-600 dark:hover-text-white md:dark:hover-bg-transparent">Добавить преподавателя</router-link>
+          </li>
+          <li v-if="$store.getters.isModerator||$store.getters.isAdmin">
+            <router-link to="/moderation" class="block py-2 pl-3 pr-4 text-gray-900 bg-orange rounded hover:bg-orange-600 md:hover-bg-transparent md:border-0 md:hover:text-grey-100 dark:bg-orange md:p-0 dark:text-grey-100 md:dark:hover-text-grey-100 dark:hover-bg-orange-600 dark:hover-text-white md:dark:hover-bg-transparent">Модерация</router-link>
+          </li>
           <li v-if="!$store.getters.isAuthenticated">
             <router-link to="/register" class="block py-2 pl-3 pr-4 text-gray-900 bg-orange rounded hover:bg-orange-600 md:hover-bg-transparent md:border-0 md:hover:text-grey-100 dark:bg-orange md:p-0 dark:text-grey-100 md:dark:hover-text-grey-100 dark:hover-bg-orange-600 dark:hover-text-white md:dark:hover-bg-transparent">Регистрация</router-link>
           </li>

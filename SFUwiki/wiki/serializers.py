@@ -25,6 +25,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     def get_student_name(self, obj):
         return obj.student.username
 
+
 class TeacherPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherPhoto

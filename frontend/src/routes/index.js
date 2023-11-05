@@ -13,6 +13,9 @@ const InstituteDetail = () => import('../views/InstituteDetail.vue');
 const DepartmentDetail = () => import('../views/DepartmentDetail.vue');
 const TeacherDetail = () => import('../views/TeacherDetail.vue');
 const TeacherListSearch = () => import('../views/TeachersListSearch.vue');
+const ModerTeacherList = () => import('../views/ModerTeacherList.vue');
+const ModerTeacherDetail = () => import('../views/ModerTeacherDetail.vue');
+const AddTeacher = () => import('../views/AddTeacher.vue');
 
 const routes = [
     { path : '/', component:Home, name: 'home'},
@@ -23,7 +26,10 @@ const routes = [
     { path : '/login', component:LoginView, name: 'login'},
     { path : '/institutes/:instituteId/department/:departmentId', component:DepartmentDetail, name:'department-detail'},
     { path : '/institutes/:instituteId/teachers/:teacherId', component:TeacherDetail, name:'teacher-detail'},
-    {path : '/teachers', component:TeacherListSearch, name:'all-teachers'}
+    {path : '/teachers', component:TeacherListSearch, name:'all-teachers'},
+    {path : '/moderation', component:ModerTeacherList, name:'moder-list'},
+    {path : '/moderation/:teacherId',component:ModerTeacherDetail, name:'moder-detail'},
+    {path : '/add_teacher', component:AddTeacher}
 ];
 
 const router = createRouter({
