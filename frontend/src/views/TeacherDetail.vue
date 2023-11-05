@@ -6,14 +6,9 @@
     </div>
     <div class="review-container">
       <template v-if="isAuthenticated">
-      <template v-if="hasUserReviewed">
-        <p>Вы уже оставили отзыв на этой странице преподавателя.</p>
-      </template>
-      <template v-else>
         <div class="review-form">
           <ReviewForm :teacherId="teacherData.id" :addReview="addReview" />
         </div>
-      </template>
     </template>
     <template v-else>
       <p>
@@ -65,9 +60,6 @@ onMounted(async () => {
     teacherAvatar.value = teacherPhotos.value[0];
     teacherPhotosForCarousel.value = teacherPhotos.value.slice(1);
     teacherReviews.value = response.data.reviews;
-
-    // Проверка на наличие отзыва пользователя на этой странице преподавателя
-    hasUserReviewed.value = teacherReviews.value.some(review => review.user_id === userId);
   } catch (error) {
     console.error('Ошибка при получении данных', error);
   }
