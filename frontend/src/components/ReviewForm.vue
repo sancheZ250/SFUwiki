@@ -1,5 +1,5 @@
 <template>
-    <form @submit.prevent="submitReview" class="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md">
+    <form @submit.prevent="submitReview" class="bg-white dark:bg-gray-900 p-4 shadow-md">
       <h3 class="text-xl font-semibold mb-4 dark:text-gray-400">Оставьте свой отзыв</h3>
       <div class="mb-4">
         <label for="knowledgeRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Знания:</label>

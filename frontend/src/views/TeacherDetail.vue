@@ -2,7 +2,9 @@
   <div>
     <div class="teacher-info">
       <TeacherInfo :teacher="teacherData" :photo="teacherAvatar" />
-      <InstituteCarousel :photos="teacherPhotosForCarousel" />
+      <div class="teacher-photo-carousel">
+        <InstituteCarousel :photos="teacherPhotosForCarousel" />
+      </div>
     </div>
     <div class="review-container">
       <template v-if="isAuthenticated">
@@ -85,6 +87,10 @@ onMounted(async () => {
 
 .review-form {
   float: left;
+}
+
+.teacher-photo-carousel {
+  
 }
 
 </style>

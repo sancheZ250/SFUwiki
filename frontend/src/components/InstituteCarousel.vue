@@ -31,11 +31,11 @@
  })
  </script>
  
- <style scoped>
+ <style>
  .carousel__item {
    min-height: 200px;
    width: 100%;
-   max-height: 600px; /* Установите максимальную высоту */
+   max-height: 300px; /* Установите максимальную высоту */
    max-width: 100%; /* Установите максимальную ширину */
    object-fit: contain; /* Сохраняет соотношение сторон и уменьшает изображение */
    border-radius: 8px;
@@ -79,5 +79,9 @@
  
  .carousel__next {
    margin-left: 10px;
+ }
+ .dark .carousel__next,
+ .dark .carousel__prev {
+  color: white;
  }
  </style>
