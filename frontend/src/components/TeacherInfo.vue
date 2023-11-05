@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex flex-col-reverse md:flex-row bg-white dark:bg-gray-900 rounded-lg shadow-md p-4">
+  <div class="w-full flex flex-col-reverse md:flex-row bg-white dark:bg-gray-900 shadow-md p-4">
     <div class="w-full md:w-3/3">
       <div class="flex flex-col justify-between p-3 leading-normal">
         <h5 class="mb-2 text-xl font-bold text-gray-900 dark:text-white">
