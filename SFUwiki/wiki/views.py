@@ -1,17 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from django.db.models import Q
 from rest_framework import generics, filters
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from SFUwiki.pagination import AllTeacherPagination
-from .models import Institute, Department, Teacher, Discipline, Review
+from .models import Institute, Department, Teacher, Discipline, Review, TeacherPhoto
 from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser, IsCommentAuthor
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
     ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
-    SimpleDepartmentSerializer, ModerTeacherSerializer
+    SimpleDepartmentSerializer, ModerTeacherSerializer, InstituteDepartmentSerializer, TeacherPhotoSerializer
 
 
 class TeachersByDepartmentList(generics.ListAPIView):
@@ -114,6 +118,7 @@ class AllTeachersAPIView(ListCreateAPIView):
     pagination_class = AllTeacherPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name']
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TeacherCardSerializer
@@ -121,3 +126,14 @@ class AllTeachersAPIView(ListCreateAPIView):
 
     def get_queryset(self):
         return Teacher.objects.filter(is_published=True)
+
+
+class InstituteDepartmentsAPIView(ListCreateAPIView):
+    serializer_class = InstituteDepartmentSerializer
+    queryset = Institute.objects.all()
+
+
+class TeacherPhotoUploadView(ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = TeacherPhotoSerializer
+    queryset = TeacherPhoto.objects.all()

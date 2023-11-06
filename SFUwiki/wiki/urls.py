@@ -2,7 +2,8 @@ from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from rest_framework_nested import routers
 from .views import InstituteViewSet, DepartmentViewSet, TeacherViewSet, DisciplineViewSet, \
-    TeachersByDepartmentList, ModerTeacherViewSet, TeacherReviewList, TeacherReviewDetail, AllTeachersAPIView
+    TeachersByDepartmentList, ModerTeacherViewSet, TeacherReviewList, TeacherReviewDetail, AllTeachersAPIView, \
+    InstituteDepartmentsAPIView, TeacherPhotoUploadView
 
 router = DefaultRouter()
 router.register(r'institutes', InstituteViewSet)
@@ -21,7 +22,9 @@ urlpatterns = [
     path('api/v1/', include(institute_router.urls)),
     path('api/v1/departments/<int:department_id>/teachers/', TeachersByDepartmentList.as_view(),
          name='teachers-by-department-list'),
-    path('api/v1/all_teachers/', AllTeachersAPIView.as_view(), name='all_teachers')
+    path('api/v1/all_teachers/', AllTeachersAPIView.as_view(), name='all_teachers'),
+    path('api/v1/institute_departments_list/', InstituteDepartmentsAPIView.as_view()),
+    path('api/v1/teacher-photos/', TeacherPhotoUploadView.as_view(), name='teacher-photo-list-create'),
 ]
 
 # api/v1/institutes/ - список институтов. api/v1/institutes/<institute_id>/ - информация о конкретном институте.

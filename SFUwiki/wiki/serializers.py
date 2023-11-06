@@ -69,6 +69,20 @@ class TeacherCardSerializer(serializers.ModelSerializer):
         return None
 
 
+class NameDepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('id', 'name')
+
+
+class InstituteDepartmentSerializer(serializers.ModelSerializer):
+    departments = NameDepartmentSerializer(many=True, required=False)
+
+    class Meta:
+        model = Institute
+        fields = ('id', 'name', 'departments')
+
+
 class DepartmentSerializer(serializers.ModelSerializer):
     teachers = TeacherCardSerializer(many=True, required=False)
 
@@ -80,7 +94,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 class SimpleDisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
-        fields = ('id', 'name', 'logo')
+        fields = ('id', 'name',)
 
 
 class TeacherSerializer(serializers.ModelSerializer):
@@ -114,4 +128,4 @@ class DisciplineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Discipline
-        fields = ('id', 'name', 'description', 'teachers', 'logo')
+        fields = ('id', 'name', 'description', 'teachers')
