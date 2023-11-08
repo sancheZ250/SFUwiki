@@ -54,7 +54,9 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         institute_id = self.kwargs['institute_pk']
         if self.action == 'list':
             return Department.objects.filter(institute_id=institute_id)
-        return Department.objects.filter(institute_id=institute_id).select_related('institute').prefetch_related('teachers')
+        else:
+            department_id = self.kwargs['pk']
+            return Department.objects.filter(institute_id=institute_id, id=department_id).select_related('institute').prefetch_related('teachers')
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -82,7 +84,10 @@ class TeacherViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return TeacherCardSerializer
         return TeacherSerializer
-
+    def perform_create(self, serializer):
+        institute_id = self.request.data.get('institute_id')
+        department_id = self.request.data.get('department_id')
+        serializer.save(institute_id=institute_id,department_id=department_id)
 
 class ModerTeacherViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSuperUser]

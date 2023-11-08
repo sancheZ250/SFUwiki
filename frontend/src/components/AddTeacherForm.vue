@@ -34,8 +34,8 @@
                 <textarea id="bio" v-model="teacher.bio" required></textarea>
             </div>
             <div class="form-group">
-                <label for="photos">Фотографии:</label>
-                <input type="file" id="photos" ref="photoInput" multiple @change="handlePhotoUpload" />
+                <label for="photo">Фото:</label>
+                <input type="file" id="photo" @change="handlePhotoUpload" accept="image/*" />
             </div>
             <button type="submit">Отправить на модерацию</button>
             <div v-if="showSuccessModal" class="modal">
@@ -65,14 +65,13 @@ export default {
             departments: [],
             institutes: [],
             selectedInstitute: null,
-            photos: [],
-            showSuccessModal: false, // Добавляем состояние для управления видимостью модального окна
-            successMessage: "", // Добавляем состояние для сообщения об успешной отправке
+            showSuccessModal: false, // состояние для управления видимостью модального окна
+            successMessage: "", // состояние для сообщения об успешной отправке
         };
     },
     methods: {
         handlePhotoUpload(event) {
-            this.photos = event.target.files;
+            this.teacher.first_photo = event.target.files[0];
         },
         closeSuccessModal() {
             this.showSuccessModal = false;
@@ -80,11 +79,11 @@ export default {
         async submitForm() {
             try {
                 // Отправка данных о преподавателе на сервер
-                const teacherResponse = await axios.post(`/api/v1/institutes/${this.teacher.institute_id}/teachers/`, this.teacher);
-                const newTeacherId = teacherResponse.data.id;
-                for (let i = 0; i < this.photos.length; i++) {
-                    await this.uploadTeacherPhoto(newTeacherId, this.photos[i]);
-                }
+                const teacherResponse = await axios.post(`/api/v1/institutes/${this.teacher.institute_id}/teachers/`, this.teacher, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                })
                 // Обработка успешного ответа и перенаправление или вывод сообщения об успехе
                 this.successMessage = "Преподаватель отправлен на модерацию, спасибо за ваш вклад в развитие проекта";
                 this.showSuccessModal = true;
@@ -102,8 +101,6 @@ export default {
             this.teacher.institute_id = null;
             this.departments = [];
             this.selectedInstitute = null;
-            this.photos = [];
-            this.$refs.photoInput.value = "";
         },
         async fetchInstitutesAndDepartments() {
             try {
@@ -122,24 +119,6 @@ export default {
                 this.selectedInstitute = null;
             }
             this.teacher.department_id = null;
-        },
-        async uploadTeacherPhoto(teacherId, photo) {
-            try {
-                const formData = new FormData();
-                formData.append('photo', photo);
-                formData.append('teacher', teacherId);
-
-                await axios.post(`/api/v1/teacher-photos/`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-
-                // Обработка успешной загрузки фотографии
-            } catch (error) {
-                // Обработка ошибки при загрузке фотографии
-                console.error('Ошибка при загрузке фотографии:', error);
-            }
         },
     },
     created() {

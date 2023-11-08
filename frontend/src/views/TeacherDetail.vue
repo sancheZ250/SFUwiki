@@ -59,8 +59,8 @@ onMounted(async () => {
     const response = await axios.get(`/api/v1/institutes/${instituteId}/teachers/${teacherId}/`);
     teacherData.value = response.data;
     teacherPhotos.value = response.data.photos;
-    teacherAvatar.value = teacherPhotos.value[0];
-    teacherPhotosForCarousel.value = teacherPhotos.value.slice(1);
+    teacherAvatar.value = response.data.first_photo;
+    teacherPhotosForCarousel.value = teacherPhotos.value;
     teacherReviews.value = response.data.reviews;
   } catch (error) {
     console.error('Ошибка при получении данных', error);

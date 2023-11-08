@@ -30,7 +30,7 @@
     <div class="w-full md:w-full">
       <img
         class="object-cover w-full h-64 md:h-auto md:w-full rounded-l-lg border border-4 border-orange-400"
-        :src="photo ? photo.photo : 'https://via.placeholder.com/150'"
+        :src="photo ? photo : '../assets/anon.jpg'"
         :alt="teacher.name"
       />
     </div>

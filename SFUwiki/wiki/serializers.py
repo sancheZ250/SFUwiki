@@ -54,19 +54,10 @@ class InstituteWithoutPhotoSerializer(serializers.ModelSerializer):
 
 
 class TeacherCardSerializer(serializers.ModelSerializer):
-    first_photo = serializers.SerializerMethodField()
-
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'institute_id', 'department_id', 'first_photo', 'avg_rating', 'review_count','is_published')
+        fields = ('id', 'name', 'institute_id', 'first_photo', 'department_id', 'avg_rating', 'review_count', 'is_published')
 
-    def get_first_photo(self, obj):
-        first_photo = obj.photos.first()
-        if first_photo:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(first_photo.photo.url)
-        return None
 
 
 class NameDepartmentSerializer(serializers.ModelSerializer):
@@ -107,9 +98,9 @@ class TeacherSerializer(serializers.ModelSerializer):
         model = Teacher
         fields = ('id', 'name', 'department_id', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
                   'communication_rating', 'avg_rating', 'institute_id', 'bio', 'photos', 'disciplines', 'reviews',
-                  'review_count', 'date_published', 'created_by',)
+                  'review_count', 'date_published', 'created_by', 'first_photo')
         read_only_fields = ['knowledge_rating', 'teaching_skill_rating', 'easiness_rating', 'communication_rating',
-                            'avg_rating', 'review_count', 'reviews']
+                            'avg_rating', 'review_count', 'reviews','created_by']
 
 
 class ModerTeacherSerializer(serializers.ModelSerializer):

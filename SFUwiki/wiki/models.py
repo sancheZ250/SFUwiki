@@ -50,6 +50,7 @@ class Teacher(models.Model):
     review_count = models.PositiveIntegerField(default=0)
     date_published = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=False)
+    first_photo = models.ImageField(upload_to='teachers_first_photos', null=True, blank=True)
 
     def __str__(self):
         return self.name
