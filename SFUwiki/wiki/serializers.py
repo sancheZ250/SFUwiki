@@ -35,7 +35,7 @@ class TeacherPhotoSerializer(serializers.ModelSerializer):
 class SimpleDepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
-        fields = ('id', 'name', 'institute', 'logo',)
+        fields = ('id', 'name', 'institute_id', 'logo',)
 
 
 class InstituteSerializer(serializers.ModelSerializer):
@@ -58,7 +58,7 @@ class TeacherCardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'institute', 'department', 'first_photo', 'avg_rating', 'review_count')
+        fields = ('id', 'name', 'institute_id', 'department_id', 'first_photo', 'avg_rating', 'review_count','is_published')
 
     def get_first_photo(self, obj):
         first_photo = obj.photos.first()
@@ -88,7 +88,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Department
-        fields = ('id', 'name', 'description', 'institute', 'teachers','logo')
+        fields = ('id', 'name', 'description', 'institute_id', 'teachers', 'logo')
 
 
 class SimpleDisciplineSerializer(serializers.ModelSerializer):
@@ -105,8 +105,8 @@ class TeacherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'department', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
-                  'communication_rating', 'avg_rating', 'institute', 'bio', 'photos', 'disciplines', 'reviews',
+        fields = ('id', 'name', 'department_id', 'alma_mater', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
+                  'communication_rating', 'avg_rating', 'institute_id', 'bio', 'photos', 'disciplines', 'reviews',
                   'review_count', 'date_published', 'created_by',)
         read_only_fields = ['knowledge_rating', 'teaching_skill_rating', 'easiness_rating', 'communication_rating',
                             'avg_rating', 'review_count', 'reviews']
@@ -128,4 +128,4 @@ class DisciplineSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Discipline
-        fields = ('id', 'name', 'description', 'teachers')
+        fields = ('id', 'name', 'teachers')

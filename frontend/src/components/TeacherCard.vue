@@ -1,5 +1,5 @@
 <template>
-    <router-link :to="'/institutes/' + teacher.institute + '/teachers/' + teacher.id">
+    <router-link :to="getTeacherLink(teacher)">
       <div class="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4">
         <div class="md:flex">
           <div class="md:flex-shrink-0">
@@ -41,6 +41,18 @@
   export default {
     props: {
       teacher: Object,
+      isModeration: Boolean,
     },
+    methods: {
+    getTeacherLink(teacher) {
+      if (this.isModeration) {
+        // Ссылка для модераторов
+        return '/moderation/' + teacher.id;
+      } else {
+        // Ссылка для обычных пользователей
+        return '/institutes/' + teacher.institute_id + '/teachers/' + teacher.id;
+      }
+    },
+  },
   };
   </script>

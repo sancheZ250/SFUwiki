@@ -10,7 +10,7 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      <TeacherCard v-for="teacher in teacherList" :key="teacher.id" :teacher="teacher" />
+      <TeacherCard v-for="teacher in teacherList" :key="teacher.id" :teacher="teacher" :isModeration="false" />
     </div>
     <Pagination :currentPage="currentPage" :totalPages="totalPages" @page-change="loadTeachers" />
   </div>
@@ -36,7 +36,7 @@ const loadTeachers = async (page) => {
     });
     teacherList.value = response.data.results;
     currentPage.value = page;
-    totalPages.value = Math.ceil(response.data.count / 2);
+    totalPages.value = Math.ceil(response.data.count / 9);
   } catch (error) {
     console.error('Ошибка при получении данных:', error);
   }

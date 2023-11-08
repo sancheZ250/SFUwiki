@@ -7,8 +7,8 @@
                 <input type="text" id="name" v-model="teacher.name" required />
             </div>
             <div class="form-group">
-                <label for="institute">Институт:</label>
-                <select id="institute" v-model="teacher.institute" @change="updateDepartments" required>
+                <label for="institute_id">Институт:</label>
+                <select id="institute_id" v-model="teacher.institute_id" @change="updateDepartments" required>
                     <option value="">Выберите институт</option>
                     <option v-for="institute in institutes" :key="institute.id" :value="institute.id">
                         {{ institute.name }}
@@ -16,8 +16,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label for="department">Кафедра:</label>
-                <select id="department" v-model="teacher.department" required>
+                <label for="department_id">Кафедра:</label>
+                <select id="department_id" v-model="teacher.department_id" required>
                     <option value="">Выберите кафедру</option>
                     <option v-for="department in selectedInstitute?.departments" :key="department.id"
                         :value="department.id">
@@ -57,10 +57,10 @@ export default {
             formTitle: "Добавить преподавателя",
             teacher: {
                 name: "",
-                department: null,
+                department_id: null,
                 alma_mater: "",
                 bio: "",
-                institute: null,
+                institute_id: null,
             },
             departments: [],
             institutes: [],
@@ -80,7 +80,7 @@ export default {
         async submitForm() {
             try {
                 // Отправка данных о преподавателе на сервер
-                const teacherResponse = await axios.post(`/api/v1/institutes/${this.teacher.institute}/teachers/`, this.teacher);
+                const teacherResponse = await axios.post(`/api/v1/institutes/${this.teacher.institute_id}/teachers/`, this.teacher);
                 const newTeacherId = teacherResponse.data.id;
                 for (let i = 0; i < this.photos.length; i++) {
                     await this.uploadTeacherPhoto(newTeacherId, this.photos[i]);
@@ -96,10 +96,10 @@ export default {
         },
         clearForm() {
             this.teacher.name = "";
-            this.teacher.department = null;
+            this.teacher.department_id = null;
             this.teacher.alma_mater = "";
             this.teacher.bio = "";
-            this.teacher.institute = null;
+            this.teacher.institute_id = null;
             this.departments = [];
             this.selectedInstitute = null;
             this.photos = [];
@@ -114,14 +114,14 @@ export default {
             }
         },
         updateDepartments() {
-            const selectedInstituteId = this.teacher.institute;
+            const selectedInstituteId = this.teacher.institute_id;
             if (selectedInstituteId) {
                 const selectedInstitute = this.institutes.find((institute) => institute.id === selectedInstituteId);
                 this.selectedInstitute = selectedInstitute;
             } else {
                 this.selectedInstitute = null;
             }
-            this.teacher.department = null;
+            this.teacher.department_id = null;
         },
         async uploadTeacherPhoto(teacherId, photo) {
             try {

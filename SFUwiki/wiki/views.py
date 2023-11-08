@@ -38,7 +38,10 @@ class DisciplineViewSet(viewsets.ModelViewSet):
 
 
 class InstituteViewSet(viewsets.ModelViewSet):
-    queryset = Institute.objects.all()
+    def get_queryset(self):
+        if self.action == 'list':
+            return Institute.objects.all()
+        return Institute.objects.all().prefetch_related('departments').prefetch_related('photos')
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -49,12 +52,21 @@ class InstituteViewSet(viewsets.ModelViewSet):
 class DepartmentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         institute_id = self.kwargs['institute_pk']
-        return Department.objects.select_related('institute').filter(institute_id=institute_id)
+        if self.action == 'list':
+            return Department.objects.filter(institute_id=institute_id)
+        return Department.objects.filter(institute_id=institute_id).select_related('institute').prefetch_related('teachers')
 
     def get_serializer_class(self):
         if self.action == 'list':
             return SimpleDepartmentSerializer
         return DepartmentSerializer
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        teachers = instance.teachers.filter(is_published=True)
+        serialized_data = DepartmentSerializer(instance, context=self.get_serializer_context()).data
+        serialized_data['teachers'] = TeacherCardSerializer(teachers, many=True, context=self.get_serializer_context()).data
+        return Response(serialized_data, status=status.HTTP_200_OK)
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -74,12 +86,13 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
 class ModerTeacherViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSuperUser]
-
-    def get_queryset(self):
-        institute_id = self.kwargs['institute_pk']
-        return Teacher.objects.filter(institute_id=institute_id, is_published=False)
+    pagination_class = AllTeacherPagination
+    queryset = Teacher.objects.filter(is_published=False)
+    serializer_class = ModerTeacherSerializer
 
     def get_serializer_class(self):
+        if self.action == 'list':
+            return TeacherCardSerializer
         return ModerTeacherSerializer
 
 

@@ -2,13 +2,16 @@ from django.db.models.signals import pre_save, post_save, pre_delete
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 
-from wiki.models import Teacher, Review
+from wiki.models import Teacher, Review, Institute
 
-
-@receiver(pre_save, sender=Teacher)
-def check_department_institute(sender, instance, **kwargs):
-    if instance.department.institute != instance.institute:
-        raise ValidationError("Teacher's department must belong to the same institute.")
+#todo
+# @receiver(pre_save, sender=Teacher)
+# def check_department_institute(sender, instance, **kwargs):
+#     teacher_department_id = instance.department_id
+#     teacher_institute_id = instance.institute_id
+#     institute = Institute.objects.get(id=teacher_institute_id)
+#     if teacher_department_id not in institute.departments:
+#         raise ValidationError("Teacher's department must belong to the same institute.")
 
 
 @receiver(post_save, sender=Review)
