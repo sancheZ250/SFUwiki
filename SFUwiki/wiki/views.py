@@ -5,7 +5,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from rest_framework import generics, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -78,16 +78,20 @@ class TeacherViewSet(viewsets.ModelViewSet):
         institute_id = self.kwargs['institute_pk']
         if self.action == 'list':
             return Teacher.objects.prefetch_related('photos').filter(institute_id=institute_id, is_published=True)
-        return Teacher.objects.select_related('institute').prefetch_related('photos').filter(institute_id=institute_id, is_published=True)
+        return Teacher.objects.select_related('institute').prefetch_related(
+            'photos', Prefetch('reviews', queryset=Review.objects.select_related('student'))
+            ).prefetch_related('disciplines').filter(institute_id=institute_id, is_published=True)
 
     def get_serializer_class(self):
         if self.action == 'list':
             return TeacherCardSerializer
         return TeacherSerializer
+
     def perform_create(self, serializer):
         institute_id = self.request.data.get('institute_id')
         department_id = self.request.data.get('department_id')
-        serializer.save(institute_id=institute_id,department_id=department_id)
+        serializer.save(institute_id=institute_id, department_id=department_id)
+
 
 class ModerTeacherViewSet(viewsets.ModelViewSet):
     permission_classes = [IsSuperUser]
@@ -101,13 +105,6 @@ class ModerTeacherViewSet(viewsets.ModelViewSet):
         return ModerTeacherSerializer
 
 
-# class TeacherReviewViewSet(viewsets.ModelViewSet):
-#     permission_classes = [IsAdminOrAuthor]
-#     serializer_class = ReviewSerializer
-#
-#     def get_queryset(self):
-#         teacher_id = self.kwargs.get('teacher_id')
-#         return Review.objects.filter(teacher_id=teacher_id)
 class TeacherReviewList(ListCreateAPIView):
     permission_classes = [IsCommentAuthor]
     serializer_class = ReviewSerializer
@@ -155,3 +152,8 @@ class TeacherPhotoUploadView(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = TeacherPhotoSerializer
     queryset = TeacherPhoto.objects.all()
+
+
+def check_user_teacher_review(request):
+    teacher_id = request.GET.get('teacherID')
+    student_id = request.GET.get('studentID')

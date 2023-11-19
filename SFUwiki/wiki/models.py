@@ -84,6 +84,9 @@ class Review(models.Model):
     def __str__(self):
         return f"{'Anonymous' if self.is_anonymous else self.student.username}: {self.comment}"
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class Discipline(models.Model):
     name = models.CharField(max_length=100)

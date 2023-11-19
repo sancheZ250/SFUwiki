@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.fields import CurrentUserDefault
 
@@ -10,20 +11,20 @@ class InstitutePhotoSerializer(serializers.ModelSerializer):
         fields = ('photo',)
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
+
 class ReviewSerializer(serializers.ModelSerializer):
-    student = serializers.HiddenField(
-        default=serializers.CurrentUserDefault(),
-        write_only=True
-    )
-    student_name = serializers.SerializerMethodField(read_only=True)
+    student = UserSerializer(default=CurrentUserDefault())
 
     class Meta:
         model = Review
         fields = ('id', 'teacher_id', 'student', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
-                  'communication_rating', 'comment', 'created_at', 'is_anonymous', 'student_name')
+                  'communication_rating', 'comment', 'created_at', 'is_anonymous',)
 
-    def get_student_name(self, obj):
-        return obj.student.username
 
 
 class TeacherPhotoSerializer(serializers.ModelSerializer):
@@ -57,7 +58,6 @@ class TeacherCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ('id', 'name', 'institute_id', 'first_photo', 'department_id', 'avg_rating', 'review_count', 'is_published')
-
 
 
 class NameDepartmentSerializer(serializers.ModelSerializer):
@@ -100,7 +100,7 @@ class TeacherSerializer(serializers.ModelSerializer):
                   'communication_rating', 'avg_rating', 'institute_id', 'bio', 'photos', 'disciplines', 'reviews',
                   'review_count', 'date_published', 'created_by', 'first_photo')
         read_only_fields = ['knowledge_rating', 'teaching_skill_rating', 'easiness_rating', 'communication_rating',
-                            'avg_rating', 'review_count', 'reviews','created_by']
+                            'avg_rating', 'review_count', 'reviews', 'created_by']
 
 
 class ModerTeacherSerializer(serializers.ModelSerializer):

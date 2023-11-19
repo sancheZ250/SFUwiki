@@ -6,8 +6,21 @@
           {{ teacher.name }}
         </h5>
         <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+          Биография:
           {{ teacher.bio }}
         </p>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+          Альма-матер:
+          {{ teacher.alma_mater }}
+        </p>
+        <div class="mt-3">
+          <div class="mb-3 font-normal text-gray-700 dark:text-gray-400">Дисциплины:</div>
+          <ul class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            <li v-for="discipline in teacher.disciplines" :key="discipline.id">
+              {{ discipline.name }}
+            </li>
+          </ul>
+        </div>
         <div class="mt-3">
           <div class="text-sm mb-1 text-gray-700 dark:text-gray-400">Рейтинги:</div>
           <div class="flex space-x-2">

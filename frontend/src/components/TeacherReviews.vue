@@ -10,7 +10,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-lg font-semibold">{{ review.is_anonymous ? 'Анонимный пользователь' :
-                            review.student_name }}</p>
+                            review.student.username }}</p>
                         <p class="text-gray-600">{{ formatDate(review.created_at) }}</p>
                     </div>
                 </div>

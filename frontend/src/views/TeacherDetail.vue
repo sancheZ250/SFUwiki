@@ -46,11 +46,9 @@ const teacherAvatar = ref({});
 const teacherPhotosForCarousel = ref([]);
 const route = useRoute();
 
-// Проверка на наличие отзыва пользователя
-const hasUserReviewed = ref(false);
 
 const addReview = (newReview) => {
-  teacherReviews.value.push(newReview);
+  teacherReviews.value.unshift(newReview);
 };
 
 onMounted(async () => {
