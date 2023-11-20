@@ -16,6 +16,7 @@ const TeacherListSearch = () => import('../views/TeachersListSearch.vue');
 const ModerTeacherList = () => import('../views/ModerTeacherList.vue');
 const ModerTeacherDetail = () => import('../views/ModerTeacherDetail.vue');
 const AddTeacher = () => import('../views/AddTeacher.vue');
+const Profile = () => import('../views/Profile.vue');
 
 const routes = [
     { path : '/', component:Home, name: 'home'},
@@ -29,7 +30,8 @@ const routes = [
     {path : '/teachers', component:TeacherListSearch, name:'all-teachers'},
     {path : '/moderation', component:ModerTeacherList, name:'moder-list'},
     {path : '/moderation/:teacherId',component:ModerTeacherDetail, name:'moder-detail'},
-    {path : '/add_teacher', component:AddTeacher}
+    {path : '/add_teacher', component:AddTeacher},
+    {path : '/profile/:id', component:Profile},
 ];
 
 const router = createRouter({

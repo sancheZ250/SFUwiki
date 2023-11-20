@@ -38,7 +38,7 @@
           </li>
           <li v-if="$store.getters.isAuthenticated">
             <div class="flex items-center">
-              <span class="mr-2 text-gray-900 dark:text-grey-100">{{ this.$store.getters.getUsername }}</span>
+              <router-link :to="`/profile/${this.$store.getters.getUserId}`" class="mr-2 text-gray-900 dark:text-grey-100">{{ this.$store.getters.getUsername }}</router-link>
               <button @click="logout" class="text-red-300 bg-orange hover:underline text-sm font-medium">Выйти</button>
             </div>
           </li>

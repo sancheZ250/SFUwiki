@@ -79,13 +79,18 @@ class Review(models.Model):
     communication_rating = models.PositiveSmallIntegerField(validators=rating_validator)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     is_anonymous = models.BooleanField(default=False)
+    likes = models.SmallIntegerField(default=0)
+    dislikes = models.SmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ('teacher', 'student')
 
     def __str__(self):
         return f"{'Anonymous' if self.is_anonymous else self.student.username}: {self.comment}"
 
-    class Meta:
-        ordering = ['-created_at']
 
 
 class Discipline(models.Model):

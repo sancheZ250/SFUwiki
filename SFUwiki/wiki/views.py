@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import viewsets, generics, status
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
@@ -12,11 +12,12 @@ from rest_framework.views import APIView
 
 from SFUwiki.pagination import AllTeacherPagination
 from .models import Institute, Department, Teacher, Discipline, Review, TeacherPhoto
+from user.models import UserProfile
 from .permissions import IsAdminOrReadOnly, IsAdminOrAuthor, IsSuperUser, IsCommentAuthor
 from .serializers import InstituteSerializer, DepartmentSerializer, TeacherSerializer, DisciplineSerializer, \
     ReviewSerializer, TeacherCardSerializer, InstituteWithoutPhotoSerializer, SimpleDisciplineSerializer, \
-    SimpleDepartmentSerializer, ModerTeacherSerializer, InstituteDepartmentSerializer, TeacherPhotoSerializer
-
+    SimpleDepartmentSerializer, ModerTeacherSerializer, InstituteDepartmentSerializer, TeacherPhotoSerializer, UserSerializer
+from django.contrib.auth.models import User
 
 class TeachersByDepartmentList(generics.ListAPIView):
     serializer_class = TeacherCardSerializer
@@ -78,8 +79,8 @@ class TeacherViewSet(viewsets.ModelViewSet):
         institute_id = self.kwargs['institute_pk']
         if self.action == 'list':
             return Teacher.objects.prefetch_related('photos').filter(institute_id=institute_id, is_published=True)
-        return Teacher.objects.select_related('institute').prefetch_related(
-            'photos', Prefetch('reviews', queryset=Review.objects.select_related('student'))
+        return Teacher.objects.prefetch_related(
+            'photos', Prefetch('reviews', queryset=Review.objects.select_related('student','student__profile'))
             ).prefetch_related('disciplines').filter(institute_id=institute_id, is_published=True)
 
     def get_serializer_class(self):
@@ -107,11 +108,12 @@ class ModerTeacherViewSet(viewsets.ModelViewSet):
 
 class TeacherReviewList(ListCreateAPIView):
     permission_classes = [IsCommentAuthor]
+    permission_classes = [IsCommentAuthor]
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
         teacher_id = self.kwargs['teacher_id']
-        return Review.objects.filter(teacher_id=teacher_id)
+        return Review.objects.filter(teacher_id=teacher_id).select_related('student')
 
     def perform_create(self, serializer):
         teacher_id = self.kwargs['teacher_id']
@@ -154,6 +156,21 @@ class TeacherPhotoUploadView(ListCreateAPIView):
     queryset = TeacherPhoto.objects.all()
 
 
+class UserProfileView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
 def check_user_teacher_review(request):
     teacher_id = request.GET.get('teacherID')
     student_id = request.GET.get('studentID')
+
+# class TeacherReviewDetail(RetrieveUpdateDestroyAPIView):
+#     permission_classes = [IsCommentAuthor]
+#     serializer_class = ReviewSerializer
+#     lookup_field = 'id'
+#
+#     def get_queryset(self):
+#         review_id = self.kwargs['id']
+#         teacher_id = self.kwargs['teacher_id']
+#         return Review.objects.filter(teacher_id=teacher_id, id=review_id)

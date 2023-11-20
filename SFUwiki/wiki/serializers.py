@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.fields import CurrentUserDefault
 
 from .models import Institute, InstitutePhoto, Department, Teacher, TeacherPhoto, Discipline, Review
-
+from user.models import UserProfile
 
 class InstitutePhotoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,20 +11,35 @@ class InstitutePhotoSerializer(serializers.ModelSerializer):
         fields = ('photo',)
 
 
-class UserSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+
+class CommentUserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(many=False, required=False)
+
     class Meta:
         model = User
-        fields = ('id', 'username')
+        fields = ('id', 'username', 'profile')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(many=False, required=False)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'profile', 'email', 'date_joined')
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    student = UserSerializer(default=CurrentUserDefault())
+    student = CommentUserSerializer(default=CurrentUserDefault())
 
     class Meta:
         model = Review
         fields = ('id', 'teacher_id', 'student', 'knowledge_rating', 'teaching_skill_rating', 'easiness_rating',
                   'communication_rating', 'comment', 'created_at', 'is_anonymous',)
-
 
 
 class TeacherPhotoSerializer(serializers.ModelSerializer):
