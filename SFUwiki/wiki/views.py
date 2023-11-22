@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import viewsets, generics, status
+from rest_framework.decorators import api_view
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, RetrieveAPIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser, IsAuthenticated
@@ -161,9 +162,15 @@ class UserProfileView(RetrieveAPIView):
     serializer_class = UserSerializer
 
 
-def check_user_teacher_review(request):
-    teacher_id = request.GET.get('teacherID')
-    student_id = request.GET.get('studentID')
+@api_view(['GET'])
+def check_review_unique(request, teacher_id):
+    user = request.user
+    try:
+        review = Review.objects.get(teacher_id=teacher_id, student=user.pk)
+        return Response({'has_review': True}, status=status.HTTP_200_OK)
+    except Review.DoesNotExist:
+        return Response({'has_review': False}, status=status.HTTP_200_OK)
+
 
 # class TeacherReviewDetail(RetrieveUpdateDestroyAPIView):
 #     permission_classes = [IsCommentAuthor]

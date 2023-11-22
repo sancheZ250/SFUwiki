@@ -43,7 +43,7 @@
     <div class="w-full md:w-full">
       <img
         class="object-cover w-full h-64 md:h-auto md:w-full rounded-l-lg border border-4 border-orange-400"
-        :src="photo ? photo : '../assets/anon.jpg'"
+        :src="teacher.first_photo ? teacher.first_photo : no_photo"
         :alt="teacher.name"
       />
     </div>
@@ -51,10 +51,20 @@
 </template>
 
 <script>
+import no_photo from '../assets/no_photo.jpg';
 export default {
   props: {
     teacher: Object,
-    photo: Object,
+  },
+  data() {
+    return {
+      no_photo,
+    };
+  },
+  computed: {
+    photoSource() {
+      return this.teacher.first_photo ? this.teacher.first_photo : require('@/assets/anon.jpg');
+    },
   },
 };
 </script>

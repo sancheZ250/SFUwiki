@@ -3,7 +3,7 @@
       <div class="max-w-md mx-auto bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4">
         <div class="md:flex">
           <div class="md:flex-shrink-0">
-            <img class="h-48 w-full object-cover md:w-48" :src="teacher.first_photo" alt="">
+            <img class="h-48 w-full object-cover md:w-48" :src="teacher.first_photo ? teacher.first_photo : no_photo" alt="">
           </div>
           <div class="p-8">
             <a href="#" class="block mt-1 text-lg leading-tight font-medium text-black dark:text-gray-300 hover:underline">{{ teacher.name }}</a>
@@ -38,11 +38,17 @@
   </template>
   
   <script>
+  import no_photo from '../assets/no_photo.jpg';
   export default {
     props: {
       teacher: Object,
       isModeration: Boolean,
     },
+    data() {
+    return {
+      no_photo,
+    };
+  },
     methods: {
     getTeacherLink(teacher) {
       if (this.isModeration) {

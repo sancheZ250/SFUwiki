@@ -3,7 +3,7 @@
       <h1>User Profile</h1>
       <div v-if="user">
         <p><strong>Ник:</strong> {{ user.username }}</p>
-        <img :src="user.profile.avatar" alt="User avatar" /> 
+        <img v-if="user.profile && user.profile.avatar" :src="user.profile.avatar" alt="User avatar" /> 
         <p><strong>Имя:</strong> {{ user.first_name }}</p>
         <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
         <p><strong>РеП:</strong> {{ user.profile.reputation }}</p>
