@@ -2,9 +2,9 @@
   <div>
     <div class="teacher-info">
       <TeacherInfo :teacher="teacherData"/>
-      <template v-if="teacherPhotos.value">
+      <template v-if="teacherPhotos">
         <div class="teacher-photo-carousel">
-          <InstituteCarousel :photos="teacherPhotosForCarousel" />
+          <InstituteCarousel :photos="teacherPhotos" />
         </div>
       </template>
     </div>
@@ -16,8 +16,7 @@
           </div>
         </template>
         <template v-else>
-          <!-- Показать сообщение, если отзыв уже оставлен -->
-          <p>Вы уже оставили отзыв для этого преподавателя.</p>
+          <ReviewEditForm :userReview="currentUserReview"/>
         </template>
       </template>
       <template v-else>
@@ -41,36 +40,39 @@ import TeacherInfo from '../components/TeacherInfo.vue';
 import InstituteCarousel from '../components/InstituteCarousel.vue';
 import TeacherReviews from '../components/TeacherReviews.vue';
 import ReviewForm from '../components/ReviewForm.vue';
+import ReviewEditForm from '../components/ReviewEditForm.vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 
 const store = useStore();
+const route = useRoute();
+
 const isAuthenticated = store.getters.isAuthenticated;
 const userId = store.getters.getUserId;
+
 const teacherData = ref({});
 const teacherPhotos = ref([]);
 const teacherReviews = ref([]);
-const teacherAvatar = ref({});
+const currentUserReview = ref({});
 const teacherPhotosForCarousel = ref([]);
-const route = useRoute();
-
 
 const addReview = (newReview) => {
   teacherReviews.value.unshift(newReview);
 };
 const { instituteId, teacherId } = route.params;
-const hasReview = ref(false); 
+const hasReview = ref(false);
+
+
+
 onMounted(async () => {
   try {
     const response = await axios.get(`/api/v1/institutes/${instituteId}/teachers/${teacherId}/`);
     teacherData.value = response.data;
     teacherPhotos.value = response.data.photos;
-    teacherPhotosForCarousel.value = teacherPhotos.value;
     teacherReviews.value = response.data.reviews;
     const reviewResponse = await axios.get(`/api/v1/check-review-unique/${teacherId}/`);
     hasReview.value = reviewResponse.data.has_review;
-
-    console.log('hasReview:', hasReview);
+    currentUserReview.value = teacherReviews.value.find(review => review.student.id === parseInt(userId));
   } catch (error) {
     console.error('Ошибка при получении данных', error);
   }
@@ -92,10 +94,10 @@ onMounted(async () => {
   /* Это задаст вертикальное расположение */
 }
 
-.review {}
+
 
 .review-form {
   float: left;
 }
 
-.teacher-photo-carousel {}</style>
+</style>

@@ -109,7 +109,6 @@ class ModerTeacherViewSet(viewsets.ModelViewSet):
 
 class TeacherReviewList(ListCreateAPIView):
     permission_classes = [IsCommentAuthor]
-    permission_classes = [IsCommentAuthor]
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
