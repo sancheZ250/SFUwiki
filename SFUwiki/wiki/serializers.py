@@ -124,7 +124,7 @@ class ModerTeacherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Teacher
-        fields = ('id', 'name', 'department', 'alma_mater', 'institute', 'bio', 'photos', 'disciplines',
+        fields = ('id', 'name', 'department', 'alma_mater', 'institute', 'bio', 'first_photo', 'photos', 'disciplines',
                   'date_published', 'created_by', 'is_published',)
         read_only_fields = ['created_by']
 

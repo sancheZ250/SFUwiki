@@ -19,7 +19,7 @@
   
   const loadTeachers = async (page) => {
     try {
-      const response = await axios.get(`/api/v1/moderate-teachers/`);
+      const response = await axios.get(`/api/v1/moderate-teachers/?page=${page}`);
       teacherList.value = response.data.results;
       currentPage.value = page;
       totalPages.value = Math.ceil(response.data.count / 9);

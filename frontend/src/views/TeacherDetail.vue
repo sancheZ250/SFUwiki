@@ -54,7 +54,6 @@ const teacherData = ref({});
 const teacherPhotos = ref([]);
 const teacherReviews = ref([]);
 const currentUserReview = ref({});
-const teacherPhotosForCarousel = ref([]);
 
 const addReview = (newReview) => {
   teacherReviews.value.unshift(newReview);
