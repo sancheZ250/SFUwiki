@@ -1,5 +1,5 @@
 <template>
-  <div>
+<div :key="refreshKey">
     <div class="teacher-info">
       <TeacherInfo :teacher="teacherData"/>
       <template v-if="teacherPhotos">
@@ -16,7 +16,7 @@
           </div>
         </template>
         <template v-else>
-          <ReviewEditForm :userReview="currentUserReview"/>
+          <ReviewEditForm :userReview="currentUserReview" @reviewUpdated="updateReviewKey"/>
         </template>
       </template>
       <template v-else>
@@ -30,11 +30,11 @@
         <TeacherReviews :reviews="teacherReviews" :teacherName="teacherData.name" />
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted} from 'vue';
 import axios from 'axios';
 import TeacherInfo from '../components/TeacherInfo.vue';
 import InstituteCarousel from '../components/InstituteCarousel.vue';
@@ -62,9 +62,12 @@ const addReview = (newReview) => {
 const { instituteId, teacherId } = route.params;
 const hasReview = ref(false);
 
+const refreshKey = ref(0);
 
-
-onMounted(async () => {
+const updateReviewKey = () => {
+  refreshKey.value += 1;
+};
+const refreshData = async () => {
   try {
     const response = await axios.get(`/api/v1/institutes/${instituteId}/teachers/${teacherId}/`);
     teacherData.value = response.data;
@@ -76,7 +79,9 @@ onMounted(async () => {
   } catch (error) {
     console.error('Ошибка при получении данных', error);
   }
-});
+};
+
+onMounted(refreshData);
 
 </script>
 
@@ -91,7 +96,6 @@ onMounted(async () => {
 .review-container {
   display: flex;
   flex-direction: column;
-  /* Это задаст вертикальное расположение */
 }
 
 

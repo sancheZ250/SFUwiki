@@ -14,7 +14,7 @@
         <input v-model="easinessRating" type="number" id="easinessRating" min="1" max="5" required class="border p-2 rounded-md dark:bg-gray-600 dark:text-white">
       </div>
       <div class="mb-4">
-        <label for="communicationRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Общение:</label>
+        <label for="communicationRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Коммуникабельность:</label>
         <input v-model="communicationRating" type="number" id="communicationRating" min="1" max="5" required class="border p-2 rounded-md dark:bg-gray-600 dark:text-white">
       </div>
       <div class="mb-4">

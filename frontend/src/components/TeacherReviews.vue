@@ -23,7 +23,7 @@
                     <p class="text-xl font-semibold">Знания: {{ review.knowledge_rating }}</p>
                     <p class="text-xl font-semibold">Преподавательские навыки: {{ review.teaching_skill_rating }}</p>
                     <p class="text-xl font-semibold">Халявность: {{ review.easiness_rating }}</p>
-                    <p class="text-xl font-semibold">В общении: {{ review.communication_rating }}</p>
+                    <p class="text-xl font-semibold">Коммуникабельность: {{ review.communication_rating }}</p>
                 </div>
                 <p class="text-gray-700 dark:text-gray-500">{{ review.comment }}</p>
             </div>
