@@ -24,6 +24,7 @@
   try {
     const response = await axios.get(`/api/v1/moderate-teachers/${teacherId}/`);
     teacherData.value = response.data;
+    console.log(teacherData.value);
   } catch (error) {
     console.error('Ошибка при получении данных', error);
   }

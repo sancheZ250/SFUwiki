@@ -1,8 +1,7 @@
 <template>
-<div :key="refreshKey">
     <div class="teacher-info">
-      <TeacherInfo :teacher="teacherData"/>
-      <template v-if="teacherPhotos">
+      <TeacherInfo :teacher="teacherData" />
+      <template v-if="teacherPhotos && teacherPhotos.length">
         <div class="teacher-photo-carousel">
           <InstituteCarousel :photos="teacherPhotos" />
         </div>
@@ -16,7 +15,7 @@
           </div>
         </template>
         <template v-else>
-          <ReviewEditForm :userReview="currentUserReview" @reviewUpdated="updateReviewKey"/>
+          <ReviewEditForm :userReview="currentUserReview" :editReview="editReview"/>
         </template>
       </template>
       <template v-else>
@@ -30,11 +29,10 @@
         <TeacherReviews :reviews="teacherReviews" :teacherName="teacherData.name" />
       </div>
     </div>
-    </div>
 </template>
 
 <script setup>
-import { ref, onMounted} from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import TeacherInfo from '../components/TeacherInfo.vue';
 import InstituteCarousel from '../components/InstituteCarousel.vue';
@@ -58,14 +56,12 @@ const currentUserReview = ref({});
 const addReview = (newReview) => {
   teacherReviews.value.unshift(newReview);
 };
+const editReview = () =>{
+  refreshData();
+};
 const { instituteId, teacherId } = route.params;
 const hasReview = ref(false);
 
-const refreshKey = ref(0);
-
-const updateReviewKey = () => {
-  refreshKey.value += 1;
-};
 const refreshData = async () => {
   try {
     const response = await axios.get(`/api/v1/institutes/${instituteId}/teachers/${teacherId}/`);
@@ -102,5 +98,4 @@ onMounted(refreshData);
 .review-form {
   float: left;
 }
-
 </style>

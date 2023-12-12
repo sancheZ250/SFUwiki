@@ -33,8 +33,8 @@
       <input v-model="isAnonymous" type="checkbox" id="isAnonymous" class="mr-2">
     </div>
     <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Обновить отзыв</button>
+    <button type="button" @click="deleteReview" class="bg-red-500 text-white p-2 rounded-md mt-4">Удалить отзыв</button>
   </form>
-  <button @click="deleteReview" class="bg-red-500 text-white p-2 rounded-md mt-4">Удалить отзыв</button>
 </div>
 </template>
   
@@ -44,8 +44,8 @@ import axios from 'axios';
 export default {
   props: {
     userReview: Object, // Существующий отзыв пользователя для редактирования
+    editReview: Function,
   },
-  emits: ['reviewUpdated'],
   data() {
     return {
       knowledgeRating: this.userReview.knowledge_rating,
@@ -70,7 +70,7 @@ export default {
 
         // Обработай успешное обновление отзыва
         console.log('Отзыв успешно обновлен:', response.data);
-        this.$emit('reviewUpdated');
+        this.editReview();
       } catch (error) {
         // Обработай ошибку при обновлении отзыва
         console.error('Ошибка при обновлении отзыва', error);
@@ -80,7 +80,7 @@ export default {
       try {
         await axios.delete(`/api/v1/teachers/${this.userReview.teacher_id}/reviews/${this.userReview.id}/`);
         console.log('Отзыв успешно удален');
-        this.$emit('reviewUpdated');
+        this.editReview();
       } catch (error) {
         console.error('Ошибка при удалении отзыва', error);
       }

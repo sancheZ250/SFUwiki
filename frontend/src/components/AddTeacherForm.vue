@@ -38,7 +38,7 @@
           class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500"></textarea>
       </div>
       <div class="mb-6">
-        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Фото:</label>
+        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Загрузить фото:</label>
         <div class="flex items-center justify-between">
           <label for="photo"
             class="w-48 flex items-center px-4 py-2 bg-white text-blue-500 rounded border border-blue-500 hover:bg-blue-500 hover:text-white cursor-pointer">
@@ -51,8 +51,8 @@
       <button type="submit"
         class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Отправить
         на модерацию</button>
-      <div class="mb-6">
-        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Фото:</label>
+      <div v-if="teacher.first_photo" class="mb-6">
+        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Предпросмотр фотографии:</label>
         <div class="flex items-center justify-between">
           <span v-if="showPreview">
             <img :src="imagePreview" alt="Preview" class="w-48 h-48 object-cover rounded">
@@ -132,6 +132,8 @@ export default {
       this.departments = [];
       this.selectedInstitute = null;
       this.teacher.first_photo = null;
+      this.imagePreview = null;
+      this.showPreview = false;
     },
     async fetchInstitutesAndDepartments() {
       try {

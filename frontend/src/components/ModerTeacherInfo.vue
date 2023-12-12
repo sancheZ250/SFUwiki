@@ -1,60 +1,114 @@
 <template>
-    <div class="w-full bg-white dark:bg-gray-900 shadow-md p-4 rounded-lg overflow-hidden">
-      <form @submit.prevent="submitForm">
-        <div class="flex flex-col md:flex-row">
-          <div class="w-full md:w-2/3 md:pr-4">
-            <div class="flex flex-col justify-between p-3 leading-normal">
-              <h5 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-400">
-                Имя: формат "Фамилия Имя Отчество"
-                <input v-model="teacher.name" class="w-full border border-gray-300 p-2 rounded-md" />
-              </h5>
-              <table class="table-auto mb-3 text-gray-700 dark:text-gray-400">
-                <tbody>
-                  <tr>
-                    <td class="font-semibold text-gray-700 dark:text-gray-400 pr-2">Биография:</td>
-                    <td><textarea v-model="teacher.bio" class="w-full border border-gray-300 p-2 rounded-md"></textarea></td>
-                  </tr>
-                  <tr>
-                    <td class="font-semibold text-gray-700 dark:text-gray-400 pr-2">Альма-матер:</td>
-                    <td><input v-model="teacher.alma_mater" class="w-full border border-gray-300 p-2 rounded-md" /></td>
-                  </tr>
-                </tbody>
-              </table>
-              <div class="mt-3">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Опубликовать
-                </button>
-              </div>
+  <div v-if="teacher.first_photo" class="w-full bg-white dark:bg-gray-900 shadow-md p-4 rounded-lg overflow-hidden">
+    <form @submit.prevent="submitForm">
+      <div class="flex flex-col md:flex-row">
+        <div class="w-full md:w-2/3 md:pr-4">
+          <div class="flex flex-col justify-between p-3 leading-normal">
+            <h5 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-400">
+              Имя: формат "Фамилия Имя Отчество"
+              <input v-model="teacher.name" class="w-full border border-gray-300 p-2 rounded-md" />
+            </h5>
+            <table class="table-auto mb-3 text-gray-700 dark:text-gray-400">
+              <tbody>
+                <tr>
+                  <td class="font-semibold text-gray-700 dark:text-gray-400 pr-2">Биография:</td>
+                  <td><textarea v-model="teacher.bio" class="w-full border border-gray-300 p-2 rounded-md"></textarea>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="font-semibold text-gray-700 dark:text-gray-400 pr-2">Альма-матер:</td>
+                  <td><input v-model="teacher.alma_mater" class="w-full border border-gray-300 p-2 rounded-md" /></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="mt-3">
+              <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Опубликовать
+              </button>
+              <button type="button" @click="deleteTeacher" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">
+                Удалить
+              </button>
             </div>
-          </div>
-          <div class="w-full md:w-1/3">
-            <div class="w-full h-64 md:h-auto">
-              <img class="object-cover w-full h-full rounded-l-lg border border-4 border-orange-400"
-                :src="teacher.first_photo ? teacher.first_photo : no_photo" :alt="teacher.name" />
-            </div>
-            <input v-model="teacher.first_photo" type="text" class="w-full border border-gray-300 p-2 rounded-md mt-2" />
           </div>
         </div>
-      </form>
-    </div>
-  </template>
+        <div class="w-full md:w-1/3">
+          <div class="w-full h-64 md:h-auto">
+            <div v-if="!isPhotoChanged"><img class="object-cover w-full h-full rounded-l-lg border border-4 border-orange-400"
+              :src="teacher.first_photo ? teacher.first_photo : no_photo" :alt="teacher.name" /></div>
+            <div v-else><img class="object-cover w-full h-full rounded-l-lg border border-4 border-orange-400"
+              :src="teacher.first_photo ? teacherPhotoUrl : no_photo" :alt="teacher.name" /></div>
+          </div>
+          <label for="file">Вы можете изменить фото:</label>
+          <input id="file" type="file" @change="onFileChange" class="w-full border border-gray-300 p-2 rounded-md mt-2" accept="image/*"  />
+        </div>
+      </div>
+    </form>
+  </div>
+</template>
   
-  <script>
-  import no_photo from '../assets/no_photo.jpg';
-  
-  export default {
-    props: {
-      teacher: Object,
-    },
-    data() {
-      return {
-        no_photo,
-      };
-    },
-    methods: {
-      submitForm() {
-        console.log('Отправлено:', this.editedTeacher);
-      },
-    },
+<script setup>
+import no_photo from '../assets/no_photo.jpg';
+import axios from 'axios';
+
+const props = defineProps({
+  teacher: Object,
+});
+
+let teacherPhotoUrl = '';
+let isPhotoChanged = false;
+
+if (props.teacher && props.teacher.first_photo) {
+  teacherPhotoUrl = props.teacher.first_photo;
+}
+
+const onFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    props.teacher.first_photo = file;
+    isPhotoChanged = true;
+    teacherPhotoUrl = URL.createObjectURL(file);
+  }
+};
+
+const submitForm = () => {
+  const teacherId = props.teacher.id;
+  const updatedTeacher = {
+    id: props.teacher.id,
+    name: props.teacher.name,
+    department: props.teacher.department,
+    alma_mater: props.teacher.alma_mater,
+    institute: props.teacher.institute,
+    bio: props.teacher.bio,
+    date_published: props.teacher.date_published,
+    created_by: props.teacher.created_by,
+    is_published: true,
+    ...(isPhotoChanged ? { first_photo: props.teacher.first_photo } : {}),
   };
-  </script>
+
+  axios
+    .put(`/api/v1/moderate-teachers/${teacherId}/`, updatedTeacher, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    .then((response) => {
+      console.log('Отправлено:', response.data);
+      isPhotoChanged = false;
+    })
+    .catch((error) => {
+      console.error('Ошибка при отправке данных:', error);
+    });
+};
+
+const deleteTeacher = () => {
+  const teacherId = props.teacher.id;
+  axios
+    .delete(`/api/v1/moderate-teachers/${teacherId}/`)
+    .then((response) => {
+      console.log('Преподаватель удален:', response.data);
+    })
+    .catch((error) => {
+      console.error('Ошибка при удалении преподавателя:', error);
+    });
+};
+</script>
