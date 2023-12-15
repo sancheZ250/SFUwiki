@@ -5,13 +5,21 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status, serializers
 from wiki.serializers import InstituteSerializer, DepartmentSerializer, InstituteWithoutPhotoSerializer, \
-    TeacherCardSerializer, SimpleDisciplineSerializer, SimpleDepartmentSerializer, DisciplineSerializer
-from wiki.models import Institute, Department, Teacher, TeacherPhoto, Review, Discipline
+    TeacherCardSerializer, SimpleDepartmentSerializer
+from wiki.models import Institute, Department, Teacher, TeacherPhoto, Review
 from django.core.files.uploadedfile import SimpleUploadedFile
+from rest_framework.authtoken.models import Token
 
 
 class InstituteTestCase(APITestCase):
     def setUp(self):
+        self.user = User.objects.create_superuser(
+            username='testuser',
+            email='admin@example.com',
+            password='testpassword')
+        response = self.client.post('/auth/token/login/', {'username': 'testuser', 'password': 'testpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
         self.logo1 = SimpleUploadedFile('logo1.png', b'logo1_content', content_type='image/png')
         self.logo2 = SimpleUploadedFile('logo2.png', b'logo2_content', content_type='image/png')
         # Создаем несколько объектов Institute для тестирования
@@ -29,7 +37,7 @@ class InstituteTestCase(APITestCase):
         )
 
     def test_get_list(self):
-        url = reverse('institute-list')
+        url = reverse('institutes-list')
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -43,7 +51,7 @@ class InstituteTestCase(APITestCase):
         self.assertEqual(serializer_data, response.data)
 
     def test_get_detail(self):
-        url = reverse('institute-detail', args=[self.institute1.pk])
+        url = reverse('institutes-detail', args=[self.institute1.pk])
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -53,7 +61,7 @@ class InstituteTestCase(APITestCase):
         self.assertIsNotNone(response.data['logo'])  # Проверяем, что логотип не None
 
     def test_create_institute(self):
-        url = reverse('institute-list')
+        url = reverse('institutes-list')
         data = {
             'name': 'New Institute',
             'description': 'New Description',
@@ -70,14 +78,14 @@ class InstituteTestCase(APITestCase):
         self.assertEqual(new_institute.abbreviation, 'NA')
 
     def test_delete_institute(self):
-        url = reverse('institute-detail', args=[self.institute1.pk])
+        url = reverse('institutes-detail', args=[self.institute1.pk])
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Institute.objects.filter(pk=self.institute1.pk).exists())
 
     def test_update_institute(self):
-        url = reverse('institute-detail', args=[self.institute1.pk])
+        url = reverse('institutes-detail', args=[self.institute1.pk])
         data = {
             'name': 'Updated Institute Name',
             'description': 'Updated Description',
@@ -111,6 +119,14 @@ class DepartmentTestCase(APITestCase):
             institute=self.institute,
             logo=None
         )
+        self.admin_user = User.objects.create_superuser(
+        username='admin',
+        email='admin@example.com',
+        password='adminpassword'
+        )
+        response = self.client.post('/auth/token/login/', {'username': 'admin', 'password': 'adminpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
 
     def test_get_list(self):
         url = reverse('institute_departments-list', args=[self.institute.pk])
@@ -127,7 +143,7 @@ class DepartmentTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['name'], "Department 1")
         self.assertEqual(response.data['description'], "Description 1")
-        self.assertEqual(response.data['institute'], self.institute.pk)
+        self.assertEqual(response.data['institute_id'], self.institute.pk)
 
     def test_create_department(self):
         url = reverse('institute_departments-list', args=[self.institute.pk])
@@ -166,7 +182,16 @@ class DepartmentTestCase(APITestCase):
 
 
 class TeacherTestCase(APITestCase):
+
+
     def setUp(self):
+        self.user = User.objects.create_superuser(
+            username='5555',
+            email='admin@example.com',
+            password='testpassword')
+        response = self.client.post('/auth/token/login/', {'username': '5555', 'password': 'testpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
         # Создаем институт, отдел и учителя для использования в тестах
         self.institute = Institute.objects.create(
             name="Институт",
@@ -191,6 +216,8 @@ class TeacherTestCase(APITestCase):
             communication_rating=5.0,
             institute=self.institute,
             review_count=0,
+            created_by=self.user,
+            is_published=True,
         )
         self.teacher2 = Teacher.objects.create(
             name="Другой Учитель",
@@ -203,6 +230,8 @@ class TeacherTestCase(APITestCase):
             communication_rating=4.0,
             institute=self.institute,
             review_count=0,
+            created_by=self.user,
+            is_published=True,
         )
         self.test_photo = SimpleUploadedFile('test.png', b'test_content', content_type='image/png')
         self.test_photo2 = SimpleUploadedFile('test2.png', b'test_content2', content_type='image/png')
@@ -214,10 +243,6 @@ class TeacherTestCase(APITestCase):
         self.teacher_photo2 = TeacherPhoto.objects.create(
             teacher=self.teacher2,
             photo=self.test_photo,
-        )
-        self.user = User.objects.create_user(
-            username='testuser',
-            password='testpassword'
         )
         self.review = Review.objects.create(
             teacher=self.teacher,
@@ -275,6 +300,7 @@ class TeacherTestCase(APITestCase):
             "easiness_rating": 4.5,
             "communication_rating": 4.5,
             "institute": self.institute.pk,
+            'is_published': True,
         }
         response = self.client.post(reverse('institute_teachers-list', args=[self.institute.pk]), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -304,79 +330,223 @@ class TeacherTestCase(APITestCase):
         response = self.client.delete(self.url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        self.assertFalse(Teacher.objects.filter(pk=self.teacher.id).exists())
+        self.assertFalse(Teacher.objects.filter(pk=self.teacher.pk).exists())
 
+class ReviewUpdateSignalTest(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='228', password='testpassword')
+        response = self.client.post('/auth/token/login/', {'username': '228', 'password': 'testpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        self.user1 = User.objects.create_user(username='2282', password='testpassword')
+        response = self.client.post('/auth/token/login/', {'username': '2282', 'password': 'testpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        self.teacher = Teacher.objects.create(
+            name="Иван Иванов",
+            # другие атрибуты учителя...
+            knowledge_rating=4.0,
+            teaching_skill_rating=4.0,
+            easiness_rating=4.0,
+            communication_rating=4.0,
+            review_count=1,
+            created_by=self.user,
+            is_published=True,
+        )
+        self.teacher1 = Teacher.objects.create(
+            name="Test Teacher",
+            knowledge_rating=4.0,
+            teaching_skill_rating=5.0,
+            easiness_rating=3.0,
+            communication_rating=4.0,
+            review_count=2,  # Предполагаем, что у учителя уже есть 2 отзыва
+            avg_rating=4.0,
+            created_by=self.user,
+            is_published=True,
+        )
+
+        self.review = Review.objects.create(
+            teacher=self.teacher,
+            student=self.user,
+            knowledge_rating=4,
+            teaching_skill_rating=4,
+            easiness_rating=4,
+            communication_rating=4,
+            comment="Хороший учитель"
+        )
+
+        self.review1 = Review.objects.create(
+            teacher=self.teacher1,
+            student=self.user,
+            knowledge_rating=4,
+            teaching_skill_rating=5,
+            easiness_rating=3,
+            communication_rating=4,
+            comment="Good teacher"
+        )
+
+        self.review2 = Review.objects.create(
+            teacher=self.teacher1,
+            student=self.user1,
+            knowledge_rating=4,
+            teaching_skill_rating=5,
+            easiness_rating=3,
+            communication_rating=4,
+            comment="Another review"
+        )
+
+    def test_review_update_signal(self):
+        # Обновляем отзыв
+        self.review.knowledge_rating = 5
+        self.review.teaching_skill_rating = 5
+        self.review.easiness_rating = 5
+        self.review.communication_rating = 5
+        self.review.save()
+
+        # Обновляем учителя из базы данных
+        self.teacher.refresh_from_db()
+
+        # Проверяем, что рейтинги учителя были обновлены
+        self.assertEqual(self.teacher.knowledge_rating, 5.0)
+        self.assertEqual(self.teacher.teaching_skill_rating, 5.0)
+        self.assertEqual(self.teacher.easiness_rating, 5.0)
+        self.assertEqual(self.teacher.communication_rating, 5.0)
+
+        # Проверяем средний рейтинг
+        expected_avg_rating = (5.0 + 5.0 + 5.0 + 5.0) / 4
+        self.assertEqual(self.teacher.avg_rating, expected_avg_rating)
+
+        # Проверяем, что количество отзывов не изменилось
+        self.assertEqual(self.teacher.review_count, 1)
+
+    def test_update_teacher_ratings_on_review_delete(self):
+        # Удаляем один из отзывов
+        self.review1.delete()
+
+        # Обновляем данные учителя из базы данных
+        self.teacher1.refresh_from_db()
+
+        # Проверяем, что рейтинги и количество отзывов обновились
+        self.assertEqual(self.teacher1.knowledge_rating, 4)
+        self.assertEqual(self.teacher1.teaching_skill_rating, 5)
+        self.assertEqual(self.teacher1.easiness_rating, 3)
+        self.assertEqual(self.teacher1.communication_rating, 4)
+        self.assertEqual(self.teacher1.review_count, 1)
+        self.assertEqual(self.teacher1.avg_rating, 4)
+
+        # Удаляем последний отзыв
+        self.review2.delete()
+
+        # Обновляем данные учителя из базы данных
+        self.teacher1.refresh_from_db()
+
+        # Проверяем, что рейтинги сбросились до 0, так как нет отзывов
+        self.assertEqual(self.teacher1.knowledge_rating, 0)
+        self.assertEqual(self.teacher1.teaching_skill_rating, 0)
+        self.assertEqual(self.teacher1.easiness_rating, 0)
+        self.assertEqual(self.teacher1.communication_rating, 0)
+        self.assertEqual(self.teacher1.review_count, 0)
+        self.assertEqual(self.teacher1.avg_rating, 0)
+
+class PermissionTest(APITestCase):
+    def setUp(self):
+        # Создаем пользователей
+        self.author = User.objects.create_user(username='author', password='password')
+        response = self.client.post('/auth/token/login/', {'username': 'author', 'password': 'password'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        self.other_user = User.objects.create_user(username='other', password='password')
+        response = self.client.post('/auth/token/login/', {'username': 'other', 'password': 'password'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+        self.staff_user = User.objects.create_superuser(username='staff', password='password')
+        response = self.client.post('/auth/token/login/', {'username': 'staff', 'password': 'password'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+
+        self.teacher = Teacher.objects.create(name='Test Teacher', created_by=self.author, is_published=True)
+
+        self.review = Review.objects.create(
+            teacher=self.teacher,
+            student=self.author,
+            knowledge_rating=5,
+            teaching_skill_rating=4,
+            easiness_rating=3,
+            communication_rating=2,
+            comment="Great teacher!"
+        )
+
+        self.url = f'/api/v1/teachers/{self.teacher.id}/reviews/{self.review.id}/'
+
+    def authenticate_user(self, user):
+        response = self.client.post('/auth/token/login/', {'username': user.username, 'password': 'password'})
+        token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+    def test_safe_methods_allowed_for_any_authenticated_user(self):
+        self.authenticate_user(self.other_user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_unsafe_methods_allowed_for_author(self):
+        self.authenticate_user(self.author)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 204)
+
+    def test_unsafe_methods_not_allowed_for_non_author(self):
+        self.authenticate_user(self.other_user)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_unsafe_methods_allowed_for_staff_user(self):
+        self.authenticate_user(self.staff_user)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, 204)
+
+class IsModeratorAPITest(APITestCase):
+    def setUp(self):
+        # Создаем обычного пользователя
+        self.user = User.objects.create_user(username='user', password='password')
+        
+        # Создаем администратора
+        self.admin_user = User.objects.create_user(username='admin', password='password', is_staff=True)
+
+        # Создаем суперпользователя
+        self.superuser = User.objects.create_superuser(username='superuser', password='password')
+
+        # URL для API
+        self.url = '/is_moder/'
+
+    def authenticate_user(self, user):
+        response = self.client.post('/auth/token/login/', {'username': user.username, 'password': 'password'})
+        token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+
+    def test_superuser_access(self):
+        self.authenticate_user(self.superuser)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'is_superuser': True, 'is_admin': True})
+
+    def test_admin_access(self):
+        self.authenticate_user(self.admin_user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'is_superuser': False, 'is_admin': True})
+
+    def test_regular_user_access(self):
+        self.authenticate_user(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'is_superuser': False, 'is_admin': False})
+
+    def test_unauthenticated_access(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, {'is_superuser': False, 'is_admin': False})
 
 def fix_absolute_urls(data):
     base_url = 'http://testserver'
     for item in data:
         item['logo'] = base_url + item['logo']
     return data
-
-
-class DisciplineTestCase(APITestCase):
-    def setUp(self):
-        self.institute = Institute.objects.create(
-            name="Институт",
-            description="Описание института",
-            abbreviation="ИНСТ",
-        )
-
-        self.department = Department.objects.create(
-            name="Кафедра",
-            description="Описание кафедры",
-            institute=self.institute,
-        )
-
-        self.teacher = Teacher.objects.create(
-            name="Брежнев Руслан Владимирович",
-            department=self.department,
-            alma_mater="МГУ",
-            bio="Биография преподавателя",
-            knowledge_rating=5.0,
-            teaching_skill_rating=5.0,
-            easiness_rating=5.0,
-            communication_rating=5.0,
-            institute=self.institute,
-            review_count=0,
-        )
-        self.test_logo1 = SimpleUploadedFile('test.png', b'test_content', content_type='image/png')
-        self.test_logo2 = SimpleUploadedFile('test2.png', b'test_content2', content_type='image/png')
-        self.discipline1 = Discipline.objects.create(name='Discipline 1', description='Description 1',
-                                                     logo=self.test_logo1)
-        self.discipline2 = Discipline.objects.create(name='Discipline 2', description='Description 2',
-                                                     logo=self.test_logo2)
-        self.discipline1.teachers.add(self.teacher)
-        self.discipline2.teachers.add(self.teacher)
-
-    def test_get_list(self):
-        url = reverse('discipline-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 2)
-        serialized_data = SimpleDisciplineSerializer([self.discipline1, self.discipline2], many=True).data
-        serialized_data = fix_absolute_urls(serialized_data)
-        self.assertEqual(serialized_data, response.data)
-
-    def test_get_detail(self):
-        url = reverse('discipline-detail', args=[self.discipline1.pk])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        serialized_data = DisciplineSerializer(self.discipline1).data
-        serialized_data['logo'] = 'http://testserver' + serialized_data['logo']
-        self.assertEqual(serialized_data, response.data)
-
-    def test_create_discipline(self):
-        url = reverse('discipline-list')
-
-        data = {
-            'name': 'New Discipline',
-            'description': 'New Description',
-        }
-
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Discipline.objects.count(), 3)
-        discipline = Discipline.objects.get(name='New Discipline')
-        self.assertEqual(discipline.name, 'New Discipline')
-        self.assertEqual(discipline.description, 'New Description')

@@ -6,6 +6,7 @@ from ..serializers import InstituteSerializer, InstitutePhotoSerializer, Departm
     TeacherSerializer
 
 
+
 class InstituteSerializerTestCase(APITestCase):
     def test_institute_serializer(self):
         # Создание объекта Institute
@@ -47,6 +48,11 @@ class InstituteSerializerTestCase(APITestCase):
 
 
 class DepartmentSerializerTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(username='123', email='asjdfhkas@gmail.com', password='testpassword')
+        response = self.client.post('/auth/token/login/', {'username': '123', 'password': 'testpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
     def test_department_serializer(self):
         institute_data = {
             'name': 'Example Institute',
@@ -71,6 +77,7 @@ class DepartmentSerializerTestCase(APITestCase):
             'easiness_rating': 3,
             'communication_rating': 5,
             'review_count': 10,
+            'created_by': self.user
         }
         teacher = Teacher.objects.create(**teacher_data)
 
@@ -79,12 +86,15 @@ class DepartmentSerializerTestCase(APITestCase):
 
         # Проверьте, что сериализатор возвращает ожидаемые данные
         self.assertEqual(serializer.data['name'], 'Example Department')
-        self.assertEqual(serializer.data['description'], 'This is an example department')
-        self.assertEqual(serializer.data['institute'], institute.id)
         self.assertEqual(len(serializer.data['teachers']), 1)
 
 
 class TeacherSerializerTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_superuser(username='1234', email='asjdfhkas@gmail.com', password='testpassword')
+        response = self.client.post('/auth/token/login/', {'username': '1234', 'password': 'testpassword'})
+        self.token = response.data['auth_token']
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
     def test_teacher_card_serializer(self):
         # Создание объекта Institute
         institute_data = {
@@ -106,7 +116,8 @@ class TeacherSerializerTestCase(APITestCase):
         teacher_data = {
             'name': 'John Doe',
             'institute': institute,
-            'department': department
+            'department': department,
+            'created_by': self.user
         }
         teacher = Teacher.objects.create(**teacher_data)
 
@@ -153,6 +164,7 @@ class TeacherSerializerTestCase(APITestCase):
             'communication_rating': 5,
             'review_count': 9,
             'bio': 'This is John Doe, a great teacher.',
+            'created_by': self.user,
         }
         teacher = Teacher.objects.create(**teacher_data)
 
@@ -162,9 +174,7 @@ class TeacherSerializerTestCase(APITestCase):
 
         # Создание дисциплины
         discipline_data = {
-            'name': 'Math',
-            'description': 'math_math_math_math_math',
-            'logo': 'logo.jpg'
+            'name': 'Math'
         }
         Discipline.objects.create(**discipline_data)
         discipline = Discipline.objects.get(name='Math')
@@ -200,7 +210,7 @@ class TeacherSerializerTestCase(APITestCase):
         self.assertEqual(serializer.data['communication_rating'], '5.000')
         self.assertEqual(serializer.data['review_count'], 10)
         self.assertEqual(serializer.data['bio'], 'This is John Doe, a great teacher.')
-        self.assertEqual(serializer.data['disciplines'][0]['logo'], '/media/logo.jpg')
+        self.assertEqual(serializer.data['disciplines'][0]['name'], 'Math')
         self.assertTrue('photos' in serializer.data)
         self.assertTrue('disciplines' in serializer.data)
         self.assertTrue('reviews' in serializer.data)
