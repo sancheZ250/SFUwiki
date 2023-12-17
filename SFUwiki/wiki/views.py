@@ -156,7 +156,7 @@ class TeacherPhotoUploadView(ListCreateAPIView):
     queryset = TeacherPhoto.objects.all()
 
 
-class UserProfileView(RetrieveAPIView):
+class UserProfileView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
