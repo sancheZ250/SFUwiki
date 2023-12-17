@@ -1,36 +1,41 @@
 <template>
-    <form @submit.prevent="submitReview" class="bg-white dark:bg-gray-900 p-4 shadow-md">
-      <h3 class="text-xl font-semibold mb-4 dark:text-gray-400">Оставьте свой отзыв</h3>
-      <div class="mb-4">
-        <label for="knowledgeRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Знания:</label>
-        <input v-model="knowledgeRating" type="number" id="knowledgeRating" min="1" max="5" required class="border p-2 rounded-md dark:bg-gray-600 dark:text-white">
+    <form @submit.prevent="submitReview" class="bg-white dark:bg-gray-800 p-6 shadow-lg rounded-lg">
+      <h3 class="text-2xl font-semibold mb-6 dark:text-gray-300">Оставьте свой отзыв</h3>
+      <div class="space-y-4">
+        <!-- Блоки оценок -->
+        <div v-for="ratingType in ratingTypes" :key="ratingType.name" class="flex items-center space-x-2">
+          <label :for="ratingType.name" class="block text-gray-700 dark:text-gray-400 font-semibold capitalize">
+            {{ ratingType.label }}:
+          </label>
+          <div class="flex space-x-1">
+            <button v-for="num in [1, 2, 3, 4, 5]" :key="num" type="button" :class="getButtonClass(ratingType.name, num)"
+                @click="setRating(ratingType.name, num)">
+              <img v-if="num <= this[`${ratingType.name}Rating`]" :src="ratingType.icon" class="w-8 h-8"/>
+              <img v-else :src="ratingType.icon" class="w-8 h-8" style="opacity: 0.3;"/>
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="comment" class="block text-gray-700 dark:text-gray-400 font-semibold">Комментарий:</label>
+          <textarea v-model="comment" id="comment" required rows="4" class="border p-2 w-full rounded-md dark:bg-gray-600 dark:text-white shadow-inner"></textarea>
+        </div>
+        <div class="mb-4">
+          <label for="isAnonymous" class="block text-gray-700 dark:text-gray-400 font-semibold">Анонимно:</label>
+          <input v-model="isAnonymous" type="checkbox" id="isAnonymous" class="mr-2">
+        </div>
       </div>
-      <div class="mb-4">
-        <label for="teachingSkillRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Преподавательские навыки:</label>
-        <input v-model="teachingSkillRating" type="number" id="teachingSkillRating" min="1" max="5" required class="border p-2 rounded-md dark:bg-gray-600 dark:text-white">
-      </div>
-      <div class="mb-4">
-        <label for="easinessRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Халявность:</label>
-        <input v-model="easinessRating" type="number" id="easinessRating" min="1" max="5" required class="border p-2 rounded-md dark:bg-gray-600 dark:text-white">
-      </div>
-      <div class="mb-4">
-        <label for="communicationRating" class="block text-gray-700 dark:text-gray-400 font-semibold">Коммуникабельность:</label>
-        <input v-model="communicationRating" type="number" id="communicationRating" min="1" max="5" required class="border p-2 rounded-md dark:bg-gray-600 dark:text-white">
-      </div>
-      <div class="mb-4">
-        <label for="comment" class="block text-gray-700 dark:text-gray-400 font-semibold">Комментарий:</label>
-        <textarea v-model="comment" id="comment" required rows="4" class="border p-2 rounded-md dark:bg-gray-600 dark:text-white"></textarea>
-      </div>
-      <div class="mb-4">
-        <label for="isAnonymous" class="block text-gray-700 dark:text-gray-400 font-semibold">Анонимно:</label>
-        <input v-model="isAnonymous" type="checkbox" id="isAnonymous" class="mr-2">
-      </div>
-      <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Отправить отзыв</button>
+      <button type="submit" class="mt-6 w-full bg-orange-500 text-white p-3 rounded-md hover:bg-orange-600 transition-colors duration-300">
+      Отправить отзыв
+    </button>
     </form>
   </template>
   
   <script>
   import axios from 'axios';
+  import easinessIcon from '../assets/easinessIcon.png';
+  import teachingSkillIcon from '../assets/teachingSkillIcon.png';
+  import communicationIcon from '../assets/communicationIcon.png';
+  import knowledgeIcon from '../assets/knowledgeIcon.png';
   
   export default {
     props: {
@@ -45,6 +50,29 @@
         communicationRating: 5,
         comment: '',
         isAnonymous: false,
+
+        ratingTypes: [
+        {
+          name: 'knowledge',
+          label: 'Знания',
+          icon: knowledgeIcon
+        },
+        {
+          name: 'communication',
+          label: 'Коммуникабельность',
+          icon: communicationIcon
+        },
+        {
+          name: 'easiness',
+          label: 'Халявность',
+          icon: easinessIcon
+        },
+        {
+          name: 'teachingSkill',
+          label: 'Преподавательские навыки',
+          icon: teachingSkillIcon
+        }
+      ]
       };
     },
     methods: {
@@ -75,6 +103,16 @@
           console.error('Ошибка при добавлении отзыва', error);
         }
       },
+      getButtonClass(ratingType, num) {
+      return [
+        'w-8 h-8 rounded-full font-medium shadow-md',
+        this[`${ratingType}Rating`] === num
+        ];
+      },
+      setRating(ratingType, num) {
+        console.log(`Setting ${ratingType} to ${num}`);
+        this[`${ratingType}Rating`] = num;
+    },
     },
   };
   </script>

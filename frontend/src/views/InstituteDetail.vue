@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import InstituteInfo from '../components/InstituteInfo.vue';
 import DepartmentCard from '../components/DepartmentCard.vue';
-import InstituteCarousel from '../components/InstituteCarousel.vue';
+import InstituteCarousel from '../components/Carousel.vue';
 const institute = ref({});
 
 const fetchInstitute = async () => {
