@@ -30,14 +30,14 @@
       <div class="flex space-x-2 mt-6">
         <button 
           type="submit" 
-          class="flex-1 bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-opacity-50 transition ease-in-out duration-300 shadow-lg"
+          class="focus:outline-none text-white bg-green-500 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-700 dark:hover:bg-green-700 dark:focus:ring-green-800"
         >
           Обновить отзыв
         </button>
         <button 
           type="button" 
           @click="deleteReview" 
-          class="flex-1 bg-red-500 text-white p-3 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-700 focus:ring-opacity-50 transition ease-in-out duration-300 shadow-lg"
+          class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
         >
           Удалить отзыв
         </button>

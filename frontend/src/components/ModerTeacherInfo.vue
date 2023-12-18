@@ -1,5 +1,5 @@
 <template>
-  <div v-if="teacher.first_photo" class="w-full bg-white dark:bg-gray-900 shadow-md p-4 rounded-lg overflow-hidden">
+  <div v-if="teacher" class="w-full bg-white dark:bg-gray-900 shadow-md p-4 rounded-lg overflow-hidden">
     <form @submit.prevent="submitForm">
       <div class="flex flex-col md:flex-row">
         <div class="w-full md:w-2/3 md:pr-4">
@@ -10,6 +10,18 @@
             </h5>
             <table class="table-auto mb-3 text-gray-700 dark:text-gray-400">
               <tbody>
+                <tr>
+                  <select v-model="selectedInstitute" class="w-full border border-gray-300 p-2 rounded-md" required>
+                    <option v-for="institute in institutesDepartments" :key="institute.id" :value="institute.id">{{
+                      institute.name }}</option>
+                  </select>
+                </tr>
+                <tr>
+                  <select v-model="selectedDepartment" class="w-full border border-gray-300 p-2 rounded-md" required>
+                    <option v-for="department in getDepartmentsByInstitute(selectedInstitute)" :key="department.id"
+                      :value="department.id">{{ department.name }}</option>
+                  </select>
+                </tr>
                 <tr>
                   <td class="font-semibold text-gray-700 dark:text-gray-400 pr-2">Биография:</td>
                   <td><textarea v-model="teacher.bio" class="w-full border border-gray-300 p-2 rounded-md"></textarea>
@@ -25,7 +37,8 @@
               <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Опубликовать
               </button>
-              <button type="button" @click="deleteTeacher" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">
+              <button type="button" @click="deleteTeacher"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">
                 Удалить
               </button>
             </div>
@@ -33,13 +46,15 @@
         </div>
         <div class="w-full md:w-1/3">
           <div class="w-full h-64 md:h-auto">
-            <div v-if="!isPhotoChanged"><img class="object-cover w-full h-full rounded-l-lg border border-4 border-orange-400"
-              :src="teacher.first_photo ? teacher.first_photo : no_photo" :alt="teacher.name" /></div>
+            <div v-if="!isPhotoChanged"><img
+                class="object-cover w-full h-full rounded-l-lg border border-4 border-orange-400"
+                :src="teacher.first_photo ? teacher.first_photo : no_photo" :alt="teacher.name" /></div>
             <div v-else><img class="object-cover w-full h-full rounded-l-lg border border-4 border-orange-400"
-              :src="teacher.first_photo ? teacherPhotoUrl : no_photo" :alt="teacher.name" /></div>
+                :src="teacher.first_photo ? teacherPhotoUrl : no_photo" :alt="teacher.name" /></div>
           </div>
           <label for="file">Вы можете изменить фото:</label>
-          <input id="file" type="file" @change="onFileChange" class="w-full border border-gray-300 p-2 rounded-md mt-2" accept="image/*"  />
+          <input id="file" type="file" @change="onFileChange" class="w-full border border-gray-300 p-2 rounded-md mt-2"
+            accept="image/*" />
         </div>
       </div>
     </form>
@@ -49,13 +64,32 @@
 <script setup>
 import no_photo from '../assets/no_photo.jpg';
 import axios from 'axios';
+import { ref, onMounted, watch } from 'vue';
+import router from '../routes/index.js';
 
 const props = defineProps({
   teacher: Object,
 });
-
+const institutesDepartments = ref([]); // Переменная для данных с API
+const selectedInstitute = ref(null); // Хранение выбранного института
+const selectedDepartment = ref(null); // Хранение выбранной кафедры
 let teacherPhotoUrl = '';
 let isPhotoChanged = false;
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('/api/v1/institute_departments_list/');
+    // Используем данные из эндпоинта и заполняем институты
+    institutesDepartments.value = response.data;
+  } catch (error) {
+    console.error('Ошибка при загрузке данных:', error);
+  }
+});
+
+const getDepartmentsByInstitute = (instituteId) => {
+  const foundInstitute = institutesDepartments.value.find(institute => institute.id === instituteId);
+  return foundInstitute ? foundInstitute.departments : [];
+};
 
 if (props.teacher && props.teacher.first_photo) {
   teacherPhotoUrl = props.teacher.first_photo;
@@ -75,9 +109,9 @@ const submitForm = () => {
   const updatedTeacher = {
     id: props.teacher.id,
     name: props.teacher.name,
-    department: props.teacher.department,
+    department: selectedDepartment.value,
     alma_mater: props.teacher.alma_mater,
-    institute: props.teacher.institute,
+    institute: selectedInstitute.value,
     bio: props.teacher.bio,
     date_published: props.teacher.date_published,
     created_by: props.teacher.created_by,
@@ -94,6 +128,7 @@ const submitForm = () => {
     .then((response) => {
       console.log('Отправлено:', response.data);
       isPhotoChanged = false;
+      router.push('/moderation')
     })
     .catch((error) => {
       console.error('Ошибка при отправке данных:', error);
@@ -111,4 +146,8 @@ const deleteTeacher = () => {
       console.error('Ошибка при удалении преподавателя:', error);
     });
 };
+watch(() => props.teacher, (newValue) => {
+  selectedInstitute.value = newValue.institute;
+  selectedDepartment.value = newValue.department;
+});
 </script>

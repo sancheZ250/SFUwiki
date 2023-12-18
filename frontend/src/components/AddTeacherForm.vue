@@ -1,45 +1,45 @@
 <template>
-  <div>
-    <h2 class="text-xl font-semibold mb-4">{{ formTitle }}</h2>
-    <form @submit.prevent="submitForm" class="max-w-md">
-      <div class="mb-6">
-        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Имя:</label>
+  <div class="max-w-xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-6 dark:text-gray-300">{{ formTitle }}</h2>
+    <form @submit.prevent="submitForm" class="space-y-6">
+      <div class="flex flex-col mb-4">
+        <label for="name" class="text-gray-800 dark:text-gray-200 mb-2">Имя:</label>
         <input type="text" id="name" v-model="teacher.name" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500" />
+          class="border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
       </div>
-      <div class="mb-6">
-        <label for="institute_id" class="block text-sm font-medium text-gray-700 mb-2">Институт:</label>
+      <div class="flex flex-col mb-4">
+        <label for="institute_id" class="text-gray-800 dark:text-gray-200 mb-2">Институт:</label>
         <select id="institute_id" v-model="teacher.institute_id" @change="updateDepartments" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+          class="border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100">
           <option value="">Выберите институт</option>
           <option v-for="institute in institutes" :key="institute.id" :value="institute.id">
             {{ institute.name }}
           </option>
         </select>
       </div>
-      <div class="mb-6">
-        <label for="department_id" class="block text-sm font-medium text-gray-700 mb-2">Кафедра:</label>
+      <div class="flex flex-col mb-4">
+        <label for="department_id" class="text-gray-800 dark:text-gray-200 mb-2">Кафедра:</label>
         <select id="department_id" v-model="teacher.department_id" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500">
+          class="border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100">
           <option value="">Выберите кафедру</option>
           <option v-for="department in selectedInstitute?.departments" :key="department.id" :value="department.id">
             {{ department.name }}
           </option>
         </select>
       </div>
-      <div class="mb-6">
-        <label for="almaMater" class="block text-sm font-medium text-gray-700 mb-2">Альма Матер:</label>
+      <div class="flex flex-col mb-4">
+        <label for="almaMater" class="text-gray-800 dark:text-gray-200 mb-2">Альма Матер:</label>
         <input type="text" id="almaMater" v-model="teacher.alma_mater" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500" />
+          class="border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100" />
       </div>
-      <div class="mb-6">
-        <label for="bio" class="block text-sm font-medium text-gray-700 mb-2">Биография:</label>
+      <div class="flex flex-col mb-4">
+        <label for="bio" class="text-gray-800 dark:text-gray-200 mb-2">Биография:</label>
         <textarea id="bio" v-model="teacher.bio" required
-          class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-blue-500"></textarea>
+          class="border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"></textarea>
       </div>
-      <div class="mb-6">
-        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Загрузить фото:</label>
-        <div class="flex items-center justify-between">
+      <div class="flex flex-col mb-4">
+        <label for="photo" class="text-gray-800 dark:text-gray-200 mb-2">Загрузить фото:</label>
+        <div class="flex items-center">
           <label for="photo"
             class="w-48 flex items-center px-4 py-2 bg-white text-blue-500 rounded border border-blue-500 hover:bg-blue-500 hover:text-white cursor-pointer">
             <span>Выбрать файл</span>
@@ -49,11 +49,10 @@
         </div>
       </div>
       <button type="submit"
-        class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Отправить
-        на модерацию</button>
-      <div v-if="teacher.first_photo" class="mb-6">
-        <label for="photo" class="block text-sm font-medium text-gray-700 mb-2">Предпросмотр фотографии:</label>
-        <div class="flex items-center justify-between">
+        class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Отправить на модерацию</button>
+      <div v-if="teacher.first_photo" class="flex flex-col mb-4">
+        <label for="photo" class="text-gray-800 dark:text-gray-200 mb-2">Предпросмотр фотографии:</label>
+        <div class="flex items-center">
           <span v-if="showPreview">
             <img :src="imagePreview" alt="Preview" class="w-48 h-48 object-cover rounded">
           </span>
@@ -64,11 +63,10 @@
         <div class="modal-content">
           <p class="success-message">{{ successMessage }}</p>
           <button @click="closeSuccessModal"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Закрыть</button>
+            class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Закрыть</button>
         </div>
       </div>
     </form>
-
   </div>
 </template>
 
