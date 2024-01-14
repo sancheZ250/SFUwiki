@@ -7,7 +7,6 @@ import store from './store';
 import 'flowbite';
 
 const app = createApp(App);
-axios.defaults.baseURL = 'http://127.0.0.1:8000';
 app.config.globalProperties.$axios = axios;
 axios.interceptors.request.use(
   (config) => {

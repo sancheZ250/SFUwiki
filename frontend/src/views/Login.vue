@@ -63,7 +63,7 @@
           // Обработка успешного входа
           console.log("Пользователь успешно вошел в систему:", loginResponse.data);
           this.$store.dispatch('login', { username: currentUserResponse.data.username, token: loginResponse.data.auth_token, userId: currentUserResponse.data.id});
-          const isModerOrAdminResponse = await axios.get("/is_moder/");
+          const isModerOrAdminResponse = await axios.get("api/v1/is_moder/");
           isModerator = isModerOrAdminResponse.data.is_superuser;
           isAdmin = isModerOrAdminResponse.data.is_admin;
           this.$store.dispatch('setModeratorAndAdminStatus', { isModerator: isModerator, isAdmin: isAdmin });

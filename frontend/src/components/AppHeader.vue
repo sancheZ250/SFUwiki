@@ -72,7 +72,7 @@ export default {
     async logout() {
       try {
         // Отправьте запрос на выход с токеном в заголовке
-        await this.$axios.post('auth/token/logout/', null);
+        await this.$axios.post('/auth/token/logout/', null);
         // Вызовите действие 'logout' из вашего хранилища, чтобы очистить данные о пользователе и токене
         this.$store.dispatch('logout');
         this.$router.push({ name: 'login' });

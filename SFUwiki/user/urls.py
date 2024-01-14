@@ -6,7 +6,7 @@ urlpatterns = [
     path('api/v1/drf-auth/', include('rest_framework.urls')),
     path('api/v1/auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
-    path('is_moder/', IsModeratorAPI.as_view())
+    path('api/v1/is_moder/', IsModeratorAPI.as_view())
 ]
 
 # /api/v1/drf-auth/login/ - POST с username и password, логиним пользователя
